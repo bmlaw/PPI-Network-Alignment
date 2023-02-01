@@ -1,0 +1,7 @@
+Loading entrez-ids from PPI file MMusculus.el
+3006
+Retrieving FASTA sequences 
+
+processing  1  /  3006: 27096
+processing  2  /  3006: 245828
+processing  3  /  3006: 74026

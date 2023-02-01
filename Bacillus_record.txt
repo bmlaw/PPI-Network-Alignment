@@ -1,0 +1,8 @@
+Loading entrez-ids from PPI file Bacillus.el
+4
+Retrieving FASTA sequences 
+
+processing  1  /  4: 938971
+processing  2  /  4: 939054
+processing  3  /  4: 936614
+processing  4  /  4: 936016
