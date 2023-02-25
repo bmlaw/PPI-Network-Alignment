@@ -17,13 +17,48 @@ def main():
     species1 = []
 
     # read ensembl file
-    with open("worm_protein_ids106.txt", 'r') as f1:
+    with open("C:\\Users\\annsb\\OneDrive\\Documents\\PPI-Network-Alignment\\ensembl\\worm_protein_ids106.txt", 'r') as f1:
         content = f1.readlines()
 
         for line in content:
-            species1.append(get_gene_ids(line))
+            # build_gene_dict returns a list with first val => stable id
+            # and second val => list of alternate ids
+            tempList = build_gene_dict(line)
 
-    print(species1)
+            species1.append(tempList)
+
+    map_gene_dict(species1)
+
+def map_gene_dict(genes: dict) -> dict:
+    for line in genes:
+        print("-----line------")
+        for ele in line:
+            print("-----ele-----")
+            for name in line[ele]:
+                print(name)
+
+"""
+Extracts data from ensembl and checks if interaction is phys/exp
+
+:param line: str line from ensembl file
+:return: key (id) and def (list of alternate names)
+"""
+def build_gene_dict(line: str) -> dict:
+    # remove extraneous formatting
+    line = line.strip()
+
+    # split line based on tab placement
+    eles = line.split('\t')
+
+    name_mapping = {}
+
+    # assign all possible mappings in one direction
+    for i in range(len(eles)):
+        name_mapping[eles[0]] = eles[1:]
+
+        eles.pop(0)
+
+    return name_mapping
 
 """
 Extracts data from physical and experimental interaction files 
@@ -56,8 +91,9 @@ def retrieve_code():
     # return the data from each set
     return [physical_set, experimental_set]
 
+
 """
-Extracts data from ensembl to check if the interaction is phys/exp
+Extracts data from ???? to check if the interaction is phys/exp
 
 :param line: str line from ensembl file
 :return: 2D list, each element having the name and gene id of genes in interaction
@@ -65,6 +101,8 @@ Extracts data from ensembl to check if the interaction is phys/exp
 def get_gene_ids(line: str) -> List:
     # create a list contains strs after line splitted by tabs
     by_tab = line.split('\t')
+
+    print(by_tab)
 
     name0 = by_tab[2].split(':')[2].split('|')[0]
     name1 = by_tab[3].split(':')[2].split('|')[0]
@@ -100,7 +138,7 @@ def get_gene_ids(line: str) -> List:
 '''
 Parallelization code
 
-read_me = sys.argv[1] #  <-- input file
+read_me = sys.argv[1] #  <-- input file   #biogrid file
 el_file = sys.argv[2] #  <-- output .el
 el_n_file = sys.argv[3] # <-- output .el file with only number ids
 
@@ -130,6 +168,7 @@ with open(read_me) as r:
                     e.write(ids[0][0] + '_' + ids[0][1] + '\t' + ids[1][0] + '_' + ids[1][1] + '\n')
 '''
 
+main()
 #print(retrieve_code())
 #print([len(retrieve_code()[0]), len(retrieve_code()[1])]) what is the reason??
 
