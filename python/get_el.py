@@ -19,7 +19,7 @@ def main():
 
     # read ensembl file
     # relative directory
-    with open("C:\\Users\\annsb\\OneDrive\\Documents\\PPI-Network-Alignment\\ensembl\\zebrafish_biomart_data.txt", 'r') as f1:
+    with open("C:\\Users\\annsb\\OneDrive\\Documents\\PPI-Network-Alignment\\ensembl\\worm_protein_ids106.txt", 'r') as f1:
         content = f1.readlines() # i shouldn't be doing this :))
 
         # build a list of Protein objects
@@ -33,7 +33,7 @@ def main():
     phys_exp = retrieve_code()
 
     # read the BioGRID file
-    with open("C:\\Users\\annsb\\OneDrive\\Documents\\PPI-Network-Alignment\\BIOGRID-organisms\\BIOGRID-ORGANISM-Danio_rerio-4.4.219.mitab.txt", 'r') as f2:
+    with open("C:\\Users\\annsb\\OneDrive\\Documents\\PPI-Network-Alignment\\BioGRID\\BIOGRID-ORGANISM-Caenorhabditis_elegans-4.4.219.mitab.txt", 'r') as f2:
 
         # build a list of interactions
         inter_list = []
