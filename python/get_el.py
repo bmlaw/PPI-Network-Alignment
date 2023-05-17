@@ -25,6 +25,7 @@ def main():
         # build a list of Protein objects
         objList = []
         for line in content[1:]:
+            line = line.replace('\n', '\t\t\t\t\t\t')   # so dumb, quick change, should probably alter later
             line = line.split('\t')
             id_map = Protein.Protein(line)
             objList.append(id_map)
@@ -80,7 +81,7 @@ def dict_to_nodes(p_dict, objList):
     d = {x.get_p_sid(): x for x in objList}
 
     # the list that will be ultimately converted to JSON
-    final_list = []
+    final_list = [{"_comment": "Test output for a JSON file -- contains network data for C. elegans"}]
 
     # dictionary that will be converted to json
     json_dict = {}
