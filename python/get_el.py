@@ -19,13 +19,12 @@ def main():
 
     # read ensembl file
     # relative directory
-    with open("C:\\Users\\annsb\\OneDrive\\Documents\\PPI-Network-Alignment\\ensembl\\worm_protein_ids106.txt", 'r') as f1:
+    with open("C:\\Users\\annsb\\OneDrive\\Documents\\PPI-Network-Alignment\\ensembl\\c_elegans_ensembl.txt", 'r') as f1:
         content = f1.readlines() # i shouldn't be doing this :))
 
         # build a list of Protein objects
         objList = []
         for line in content[1:]:
-            line = line.replace('\n', '\t\t\t\t\t\t')   # so dumb, quick change, should probably alter later
             line = line.split('\t')
             id_map = Protein.Protein(line)
             objList.append(id_map)
@@ -53,38 +52,61 @@ def main():
 
     prots_dict = list_to_dict(map_list)
 
-    retList = dict_to_nodes(prots_dict, objList)
+    query_subnetwork(prots_dict, "R05F9.1d.1", "C_ELEGANS", objList)
 
-    retList2 = dict_to_edges(prots_dict, retList[1])
+    ##### TESTING THE ENTIRE NETWORK #####
+    # retList = dict_to_nodes(prots_dict, objList)
+    #
+    # retList2 = dict_to_edges(prots_dict, retList[1])
+    #
+    # retList[0].extend(retList2)
+    #
+    # # combines the protein and edge data for the entire network
 
-    # print(retList[1])
-    # print("...")
-    # print(retList2)
 
-    retList[0].extend(retList2)
+def query_subnetwork(p_dict, prot, species, objList):
+    """
+    Takes in a query protein and query species and returns a subnetwork in JSON format
 
-    json_str = json.dumps(retList[0])
+    :param p_dict: dictionary of proteins and their connections as def list
+    :param prot: desired protein as str
+    :param species: desired species as str
+    :return: list of dict values that corresponds with the desired subnetwork
+    """
+    prot_def = p_dict[prot]
+
+    # add the query protein to the list of its interacting proteins
+    temp = prot_def
+    temp.append(prot)
+
+    retList = list_to_nodes(temp, objList)
+    nodes = retList[0]  # protein nodes to become JSON
+    edge_dict = retList[1]  # dict of protein name as key and corresponding id as def
+
+    edges = list_to_edges(prot, prot_def, edge_dict)
+
+    # add the two lists of dict objects together to form the whole JSON file
+    nodes.extend(edges)
+
+    json_str = json.dumps(nodes)
 
     file = open("test_json.json", "w")
     file.write(json_str)
 
-"""
-Converts python dictionary to JSON format with established conventions.
-Writes to a JSON file, returns nothing.
+def list_to_nodes(p_inters, objList):
+    """
+    Converts python dictionary to JSON format with established conventions.
+    Writes to a JSON file, returns nothing.
 
-:param p_dict: dictionary of proteins and their connections as def list
-:param objList: list of Protein objects to get alternate ids/names
-:return: final list of JSON elements without edges, dict of edge ids and e_ids
-"""
-def dict_to_nodes(p_dict, objList):
+    :param p_dict: dictionary of proteins and their connections as def list
+    :param objList: list of Protein objects to get alternate ids/names
+    :return: final list of JSON elements without edges, dict of edge ids and e_ids
+    """
     # take a dictionary with the entrezgene as the key
     d = {x.get_p_sid(): x for x in objList}
 
     # the list that will be ultimately converted to JSON
     final_list = [{"_comment": "Test output for a JSON file -- contains network data for C. elegans"}]
-
-    # dictionary that will be converted to json
-    json_dict = {}
 
     # dictionary that will hold node ids and edges
     edge_dict = {}
@@ -94,7 +116,7 @@ def dict_to_nodes(p_dict, objList):
 
     count = 0
 
-    for key in p_dict:
+    for key in p_inters:
         json_dict = {"data": {}}
         json_dict["data"]["id"] = "n" + str(count)
 
@@ -121,46 +143,46 @@ def dict_to_nodes(p_dict, objList):
 
     return [final_list, edge_dict]
 
-"""
-Takes the converted nodes and writes edges to JSON based on established conventions
-and data in the established python dictionary
+def list_to_edges(prot, e_list, e_dict):
+    """
+    Takes the converted nodes and writes edges to JSON based on established conventions
+    and data in the established python dictionary
 
-:param p_dict: dictionary of each protein in the network and their connections
-:param edge_dict: dictionary of id and its corresponding ensembl id
-:return: list of JSON edges
-"""
-def dict_to_edges(p_dict, edge_dict):
+    :param p_dict: dictionary of each protein in the network and their connections
+    :param edge_dict: dictionary of id and its corresponding ensembl id
+    :return: list of JSON edges
+    """
+
     # final list of JSON edges to be returned
     final_list = []
 
     temp = {}
 
     # loop through p_dict
-    for ele in p_dict:
-        for inter in p_dict[ele]:
-            temp = {"data": {}}
+    for ele in e_list:
+        temp = {"data": {}}
 
-            # set the source to the current protein
-            temp["data"]["source"] = edge_dict[ele]
+        # set the source to the current protein
+        temp["data"]["source"] = e_dict[prot]
 
-            # set the target to the interacting protein
-            temp["data"]["target"] = edge_dict[inter]
+        # set the target to the interacting protein
+        temp["data"]["target"] = e_dict[ele]
 
-            #print(temp)
+        #print(temp)
 
-            # add to the final list
-            final_list.append(temp)
+        # add to the final list
+        final_list.append(temp)
 
     return final_list
 
-"""
-Constructs a dictionary with a list of each protein it interacts with 
-as def
-
-:param map_list: list of mapped protein ids
-:return: dict of each protein id and it's interactors
-"""
 def list_to_dict(map_list):
+    """
+    Constructs a dictionary with a list of each protein it interacts with
+    as def
+
+    :param map_list: list of mapped protein ids
+    :return: dict of each protein id and it's interactors
+    """
 
     prot_hash = {}
     for interaction in map_list:
@@ -174,7 +196,7 @@ def list_to_dict(map_list):
 
             # check if the interacting protein is already in the current def list
             # and also not in the dict already so that there aren't duplicate interactions
-            if prot2 not in prot_hash[prot] and prot2 not in prot_hash:
+            if prot2 not in prot_hash[prot]:
                 # add the interacting protein to the list of interactors for the current
                 prot_hash[prot].append(interaction[current - 1])
 
@@ -182,13 +204,13 @@ def list_to_dict(map_list):
 
     return prot_hash
 
-"""
-Extracts data from physical and experimental interaction files 
-and places them into two respective sets.
-
-:return: list with two values [phys, exp]
-"""
 def retrieve_code():
+    """
+    Extracts data from physical and experimental interaction files
+    and places them into two respective sets.
+
+    :return: list with two values [phys, exp]
+    """
     # open both phys and exp files to read
     physical_codes = open("physical_interaction_codes.txt", 'r')
     experimental_codes = open("experimental_detected_codes.txt", 'r')
@@ -213,15 +235,15 @@ def retrieve_code():
     # return the data from each set
     return [physical_set, experimental_set]
 
-"""
-Take the id entry and convert it to a form that can be made into a 
-Protein object
-
-:param objList: list of protein objects from ensembl
-:param id_list: list of str alternate ids from BioGRID
-:return: Protein object with corresponding ids as attributes
-"""
 def id_to_protein(objList, ids):
+    """
+    Take the id entry and convert it to a form that can be made into a
+    Protein object
+
+    :param objList: list of protein objects from ensembl
+    :param id_list: list of str alternate ids from BioGRID
+    :return: Protein object with corresponding ids as attributes
+    """
 
     # count the number of interactions processed
     count = 0
@@ -316,6 +338,8 @@ def id_to_protein(objList, ids):
                                 # increase instance of current by 1 in dict
                                 none_dict[current] += 1
 
+                                count += 1
+
                 # if str(current)[0] == "!":   # for checking how many BioGrid proteins were actually paired
                 #     count_none += 1
 
@@ -356,14 +380,15 @@ def id_to_protein(objList, ids):
 
     return map_list
 
-"""
-Extracts data from BioGRID and filters 'bad' interactions
-
-:param line: str line from BioGRID file
-:param phys_exp: list of sets of physical and experimental codes
-:return: 2 ele dict, protein name as key and alt id list as definition
-"""
 def get_gene_ids(line, phys_exp) -> List:
+    """
+    Extracts data from BioGRID and filters 'bad' interactions
+
+    :param line: str line from BioGRID file
+    :param phys_exp: list of sets of physical and experimental codes
+    :return: 2 ele dict, protein name as key and alt id list as definition
+    """
+
     # create a list contains strs after line splitted by tabs
     by_tab = line[0].split('\t')
 
@@ -413,14 +438,14 @@ def get_gene_ids(line, phys_exp) -> List:
 
     return [[name0, id_list0], [name1, id_list1]]
 
-"""
-Helper function for building a list of ids from the biogrid file 
-under the alt ids for interactors A and B
-
-:param line: line of the BioGRID file that includes alternate ids
-:return: list of alternate ids in the order that they appear in the file
-"""
 def build_id_list(line):
+    """
+    Helper function for building a list of ids from the biogrid file
+    under the alt ids for interactors A and B
+
+    :param line: line of the BioGRID file that includes alternate ids
+    :return: list of alternate ids in the order that they appear in the file
+    """
     id = line.split("|")
 
     id_list = []
