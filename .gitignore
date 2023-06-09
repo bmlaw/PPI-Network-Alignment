@@ -1,0 +1,8 @@
+# Project-specific ignore settings
+
+
+BioGRID/
+
+# Binary files
+*.zip
+
