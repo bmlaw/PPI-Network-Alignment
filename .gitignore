@@ -1,3 +1,5 @@
+
+*.zip
 # Project-specific ignore settings
 
 
@@ -243,3 +245,4 @@ fabric.properties
 
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
+>>>>>>> 1831aeed38f1470114b83a3a01d6956a149ebeb2
