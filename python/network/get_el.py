@@ -7,23 +7,31 @@ __email__ = "asheaffe@iwu.edu"
 __credits__ = ["Norman Luo", "Brian Law"]
 
 import json
+import sys
 from classes import Protein
 
-"""
-Runs the functions defined below
-"""
-def main():
 
-    # hold filepaths as strings
-    filepath1 = "../BioGRID/BIOGRID-ORGANISM-Caenorhabditis_elegans-4.4.219.mitab.txt"
-    filepath2 = "../BioGRID/BIOGRID-ORGANISM-Mus_musculus-4.4.219.mitab.txt"
+def main(mitab_file1=None, mitab_file2=None):
+    """
 
-    species1 = extract_name(filepath1)
-    species2 = extract_name(filepath2)
+
+    @param mitab_file1: filepath to
+    @param mitab_file2: 
+    @return:
+    """
+
+    # If run from PyCharm, filenames can be set here manually
+    if mitab_file1 is None and mitab_file2 is None:
+        # hold filepaths as strings
+        mitab_file1 = "../BioGRID/BIOGRID-ORGANISM-Caenorhabditis_elegans-4.4.219.mitab.txt"
+        mitab_file2 = "../BioGRID/BIOGRID-ORGANISM-Mus_musculus-4.4.219.mitab.txt"
+
+    species1 = extract_name(mitab_file1)
+    species2 = extract_name(mitab_file2)
 
     # read ensembl file for worm
     with open("../ensembl//c_elegans_ensembl.txt", 'r') as f1:
-        content = f1.readlines() # i shouldn't be doing this :))
+        content = f1.readlines()  # i shouldn't be doing this :))
 
         # build a list of Protein objects
         objList1 = []
@@ -47,7 +55,7 @@ def main():
     phys_exp = retrieve_code()
 
     # read the BioGRID file for worm
-    with open(filepath1, 'r') as f3:
+    with open(mitab_file1, 'r') as f3:
 
         # build a list of interactions
         inter_list1 = []
@@ -63,7 +71,7 @@ def main():
                     inter_list1.append(interaction)
 
     # read the BioGRID file for mouse
-    with open(filepath2, 'r') as f4:
+    with open(mitab_file2, 'r') as f4:
 
         # build a list of interactions
         inter_list2 = []
@@ -84,7 +92,8 @@ def main():
     prots_dict1 = list_to_dict(map_list1)
     prots_dict2 = list_to_dict(map_list2)
 
-    query_subnetwork(prots_dict1, "R05F9.1d.1", prots_dict2, "ENSMUSP00000090649", objList1, objList2, species1, species2)
+    query_subnetwork(prots_dict1, "R05F9.1d.1", prots_dict2, "ENSMUSP00000090649", objList1, objList2, species1,
+                     species2)
 
     ##### TESTING THE ENTIRE NETWORK #####
     # retList = dict_to_nodes(prots_dict, objList)
@@ -94,6 +103,7 @@ def main():
     # retList[0].extend(retList2)
     #
     # # combines the protein and edge data for the entire network
+
 
 def extract_name(filepath):
     """
@@ -106,6 +116,7 @@ def extract_name(filepath):
     species = species[2]
     species = species.replace('_', ' ')
     return species
+
 
 def query_subnetwork(p_dict_s1, prot_s1, p_dict_s2, prot_s2, objList_s1, objList_s2, s1, s2):
     """
@@ -138,13 +149,13 @@ def query_subnetwork(p_dict_s1, prot_s1, p_dict_s2, prot_s2, objList_s1, objList
     edges2 = list_to_edges(prot_s2, prot_def2, edge_dict2)
 
     json_header = [
-                  {"data":
-                       {"id": "species1", "name": s1},
-                        "_comment": "Test output for a JSON file -- contains a subnetwork of C. elegans and a subnetwork of M. musculus",
-                        "classes": "container s1"},
-                  {"data": {"id": "species2", "name": s2}, "classes": "container s2"},
-                  {"data": {"id": "aligned non-ortho", "name": "aligned non-orthology"}, "classes": "container"},
-                  {"data": {"id": "aligned ortho", "name": "aligned orthology"}, "classes": "container"}]
+        {"data":
+             {"id": "species1", "name": s1},
+         "_comment": "Test output for a JSON file -- contains a subnetwork of C. elegans and a subnetwork of M. musculus",
+         "classes": "container s1"},
+        {"data": {"id": "species2", "name": s2}, "classes": "container s2"},
+        {"data": {"id": "aligned non-ortho", "name": "aligned non-orthology"}, "classes": "container"},
+        {"data": {"id": "aligned ortho", "name": "aligned orthology"}, "classes": "container"}]
 
     # add all lists of dict objects together to form the whole JSON file
     json_header.extend(nodes1)
@@ -156,6 +167,7 @@ def query_subnetwork(p_dict_s1, prot_s1, p_dict_s2, prot_s2, objList_s1, objList
 
     file = open("test_json.json", "w")
     file.write(json_str)
+
 
 def list_to_nodes(p_inters, objList, species_num):
     """
@@ -192,8 +204,8 @@ def list_to_nodes(p_inters, objList, species_num):
             json_dict["data"]["name"] = d[key].get_name()
             json_dict["data"]["parent"] = "unaligned"
             json_dict["data"]["ncbi"] = d[key].get_ncbi()
-            json_dict["data"]["uniprot"] = d[key].get_swissprot()## will need to alter this
-                                                                  # there is also trembl
+            json_dict["data"]["uniprot"] = d[key].get_swissprot()  ## will need to alter this
+            # there is also trembl
 
         json_dict["classes"] = "species" + str(species_num) + " unaligned protein"
 
@@ -208,6 +220,7 @@ def list_to_nodes(p_inters, objList, species_num):
     json_dict["classes"] = json_dict["classes"] + " query"
 
     return [final_list, edge_dict]
+
 
 def list_to_edges(prot, e_list, e_dict):
     """
@@ -236,12 +249,13 @@ def list_to_edges(prot, e_list, e_dict):
 
         temp["classes"] = "species" + str(e_dict[prot][0]) + " edge"
 
-        #print(temp)
+        # print(temp)
 
         # add to the final list
         final_list.append(temp)
 
     return final_list
+
 
 def list_to_dict(map_list):
     """
@@ -258,9 +272,9 @@ def list_to_dict(map_list):
         for prot in interaction:
             # check if the protein already exists in the dictionary
             if prot not in prot_hash:
-                prot_hash[prot] = []    # create a new list if not in dict
+                prot_hash[prot] = []  # create a new list if not in dict
 
-            prot2 = interaction[current - 1]    # receive interacting protein (either 0 or -1)
+            prot2 = interaction[current - 1]  # receive interacting protein (either 0 or -1)
 
             # check if the interacting protein is already in the current def list
             # and also not in the dict already so that there aren't duplicate interactions
@@ -271,6 +285,7 @@ def list_to_dict(map_list):
             current += 1
 
     return prot_hash
+
 
 def retrieve_code():
     """
@@ -302,6 +317,7 @@ def retrieve_code():
 
     # return the data from each set
     return [physical_set, experimental_set]
+
 
 def id_to_protein(objList, ids):
     """
@@ -428,16 +444,17 @@ def id_to_protein(objList, ids):
     try:
         file.write("# Total interactions processed: " + str(count) + "\n")
         file.write("# Total filtered interactions: " + str(count_invalid) + "\n")
-        file.write("# Percent filtered: " + str(round((count_invalid/count), 3)*100) + "%\n")
+        file.write("# Percent filtered: " + str(round((count_invalid / count), 3) * 100) + "%\n")
         file.write("# Total unmappable id's in file (including duplicates): " + str(count_none) + "\n")
-        file.write("# Percent unmappable: " + str(round((count_none/count), 3)*100) + "%\n")
+        file.write("# Percent unmappable: " + str(round((count_none / count), 3) * 100) + "%\n")
         file.write("# Non-physical interactions filtered out: " + str(non_phys) + "\n")
         file.write("# Non-experimental interactions filtered out: " + str(non_exp) + "\n")
         file.write("# Self-loops filtered out: " + str(self_loop) + "\n")
         file.write("# Interspecies interactions filtered out: " + str(interspecies) + "\n")
         file.write("\n")
         for id in none_dict:
-            file.write(str(id) + " occurs " + str(none_dict[id]) + " times " + "\t" + str(round((none_dict[id]/count_none), 3)*100) + "%\n")
+            file.write(str(id) + " occurs " + str(none_dict[id]) + " times " + "\t" + str(
+                round((none_dict[id] / count_none), 3) * 100) + "%\n")
         file.write("\n")
         for inter in map_list:
             for id in inter:
@@ -448,7 +465,8 @@ def id_to_protein(objList, ids):
 
     return map_list
 
-def get_gene_ids(line, phys_exp) -> List:
+
+def get_gene_ids(line, phys_exp) -> list[list[str, str], list[str, str]]:
     """
     Extracts data from BioGRID and filters 'bad' interactions
 
@@ -506,6 +524,7 @@ def get_gene_ids(line, phys_exp) -> List:
 
     return [[name0, id_list0], [name1, id_list1]]
 
+
 def build_id_list(line):
     """
     Helper function for building a list of ids from the biogrid file
@@ -522,6 +541,7 @@ def build_id_list(line):
         id_list.append(type[1])
 
     return id_list
+
 
 '''
 Parallelization code
@@ -556,8 +576,19 @@ with open(read_me) as r:
                     e.write(ids[0][0] + '_' + ids[0][1] + '\t' + ids[1][0] + '_' + ids[1][1] + '\n')
 '''
 
-main()
-#print(retrieve_code())
-#print([len(retrieve_code()[0]), len(retrieve_code()[1])]) what is the reason??
+if __name__ == '__main__':
+    from argparse import ArgumentParser
 
+    ap = ArgumentParser()
 
+    args, unknownargs = ap.parse_known_args()
+    print(args)
+    print(unknownargs)
+
+    if len(unknownargs) == 2:
+        main(unknownargs[0], unknownargs[1])
+    else:
+        main()
+
+    # print(retrieve_code())
+    # print([len(retrieve_code()[0]), len(retrieve_code()[1])]) what is the reason??
