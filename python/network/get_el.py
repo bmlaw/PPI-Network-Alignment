@@ -16,43 +16,31 @@ def main(mitab_file1=None, mitab_file2=None):
 
 
     @param mitab_file1: filepath to
-    @param mitab_file2: 
+    @param mitab_file2:
     @return:
     """
 
     # If run from PyCharm, filenames can be set here manually
     if mitab_file1 is None and mitab_file2 is None:
         # hold filepaths as strings
-        mitab_file1 = "../BioGRID/BIOGRID-ORGANISM-Caenorhabditis_elegans-4.4.219.mitab.txt"
-        mitab_file2 = "../BioGRID/BIOGRID-ORGANISM-Mus_musculus-4.4.219.mitab.txt"
+        mitab_file1 = "../../BioGRID/BIOGRID-ORGANISM-Caenorhabditis_elegans-4.4.222.mitab.txt"
 
     species1 = extract_name(mitab_file1)
-    species2 = extract_name(mitab_file2)
+
 
     # read ensembl file for worm
-    with open("../ensembl//c_elegans_ensembl.txt", 'r') as f1:
+    with open("../../ensembl/" + species1 + "_ensembl-109.txt", 'r') as f1:
         content = f1.readlines()  # i shouldn't be doing this :))
 
         # build a list of Protein objects
-        objList1 = []
+        protein_list = []
         for line in content[1:]:
             line = line.split('\t')
             id_map = Protein.Protein(line)
-            objList1.append(id_map)
-
-    # read ensembl file for mouse
-    with open("../ensembl/m_musculus_ensembl.txt", 'r') as f2:
-        content = f2.readlines()
-
-        # build a list of Protein objects
-        objList2 = []
-        for line in content[1:]:
-            line = line.split('\t')
-            id_map = Protein.Protein(line)
-            objList2.append(id_map)
+            protein_list.append(id_map)
 
     # receive the physical and experimental codes
-    phys_exp = retrieve_code()
+    good_codes = retrieve_code()
 
     # read the BioGRID file for worm
     with open(mitab_file1, 'r') as f3:
@@ -65,35 +53,22 @@ def main(mitab_file1=None, mitab_file2=None):
                 line = line.rstrip()
                 line = line.split("\n")
 
-                interaction = get_gene_ids(line, phys_exp)
+                interaction = get_gene_ids(line, good_codes)
 
                 if interaction != []:
                     inter_list1.append(interaction)
 
-    # read the BioGRID file for mouse
-    with open(mitab_file2, 'r') as f4:
-
-        # build a list of interactions
-        inter_list2 = []
-        for line in f4:
-            # skip the first line
-            if line[0] != '#':
-                line = line.rstrip()
-                line = line.split("\n")
-
-                interaction = get_gene_ids(line, phys_exp)
-
-                if interaction != []:
-                    inter_list2.append(interaction)
-
-    map_list1 = id_to_protein(objList1, inter_list1)
-    map_list2 = id_to_protein(objList2, inter_list2)
+    map_list1 = id_to_protein(protein_list, inter_list1)
 
     prots_dict1 = list_to_dict(map_list1)
-    prots_dict2 = list_to_dict(map_list2)
 
-    query_subnetwork(prots_dict1, "R05F9.1d.1", prots_dict2, "ENSMUSP00000090649", objList1, objList2, species1,
-                     species2)
+    # query_subnetwork(prots_dict1, "R05F9.1d.1", prots_dict2, "ENSMUSP00000090649", protein_list, objList2, species1,
+    #                 species2)
+
+    print(prots_dict1)
+
+    # with open(el_file, 'w') as e:
+    #    e.write(ids[0][0] + '_' + ids[0][1] + '\t' + ids[1][0] + '_' + ids[1][1] + '\n')
 
     ##### TESTING THE ENTIRE NETWORK #####
     # retList = dict_to_nodes(prots_dict, objList)
@@ -114,7 +89,9 @@ def extract_name(filepath):
     species = filepath.split("/")
     species = species[-1].split("-")
     species = species[2]
-    species = species.replace('_', ' ')
+    species = species[0] + species[species.find('_'):]
+    species = species.lower()
+
     return species
 
 
@@ -287,12 +264,12 @@ def list_to_dict(map_list):
     return prot_hash
 
 
-def retrieve_code():
+def retrieve_code() -> (set[str], set[str]):
     """
     Extracts data from physical and experimental interaction files
     and places them into two respective sets.
 
-    :return: list with two values [phys, exp]
+    :return: 2 sets of strings, with MI codes for physical interactions and experimentally-detected interaction
     """
     # open both phys and exp files to read
     physical_codes = open("physical_interaction_codes.txt", 'r')
@@ -316,16 +293,16 @@ def retrieve_code():
     experimental_codes.close()
 
     # return the data from each set
-    return [physical_set, experimental_set]
+    return physical_set, experimental_set
 
 
-def id_to_protein(objList, ids):
+def id_to_protein(protein_list: list[Protein], interactions: ((str, list[str]), (str, list[str]))):
     """
     Take the id entry and convert it to a form that can be made into a
     Protein object
 
-    :param objList: list of protein objects from ensembl
-    :param id_list: list of str alternate ids from BioGRID
+    :param protein_list: list of protein objects from ensembl
+    :param interactions: list of str alternate ids from BioGRID
     :return: Protein object with corresponding ids as attributes
     """
 
@@ -351,17 +328,17 @@ def id_to_protein(objList, ids):
     filtered = False
 
     # take a dictionary with the entrezgene as the key
-    d = {x.get_ncbi(): x for x in objList}  # print as a repr
+    d = {x.get_ncbi(): x for x in protein_list}  # print as a repr
 
     # also take a dict with the name as the key
     # in case the entrezgene fails
-    d2 = {x.get_name(): x for x in objList}
+    d2 = {x.get_name(): x for x in protein_list}
 
     # take a dict with the swissprot id as the key
-    d3 = {x.get_swissprot(): x for x in objList}
+    d3 = {x.get_swissprot(): x for x in protein_list}
 
     map_list = []
-    for id_list in ids:
+    for id_list in interactions:
         mapped = []
         current = ""
 
@@ -393,7 +370,7 @@ def id_to_protein(objList, ids):
                     # check if there is an sid for each key
                     current = d[key].get_p_sid()
 
-                except Exception as ex:
+                except KeyError as ex:
 
                     # if the key does not have an associated sid, loop alternate keys
                     for alts in ele[1]:
@@ -466,23 +443,24 @@ def id_to_protein(objList, ids):
     return map_list
 
 
-def get_gene_ids(line, phys_exp) -> list[list[str, str], list[str, str]]:
+def get_gene_ids(line, good_codes) -> ((str, [str]), (str, [str])):
     """
     Extracts data from BioGRID and filters 'bad' interactions
 
     :param line: str line from BioGRID file
-    :param phys_exp: list of sets of physical and experimental codes
-    :return: 2 ele dict, protein name as key and alt id list as definition
+    :param good_codes: tuple of sets of physical and experimental codes
+    :return: a tuple, representing a PPI, with 2 inner tuples, each with the EntrezGene ID and a list of
+             the other listed BioGRID IDs for each interactor
     """
 
     # create a list contains strs after line splitted by tabs
     by_tab = line[0].split('\t')
 
     # set of physical codes
-    phys_codes = phys_exp[0]
+    phys_codes = good_codes[0]
 
     # set of experimental codes
-    exp_codes = phys_exp[1]
+    exp_codes = good_codes[1]
 
     # protein names in interaction
     name0 = by_tab[0].split(':')[1]
@@ -522,7 +500,7 @@ def get_gene_ids(line, phys_exp) -> list[list[str, str], list[str, str]]:
     id_list0 = build_id_list(by_tab[2])
     id_list1 = build_id_list(by_tab[3])
 
-    return [[name0, id_list0], [name1, id_list1]]
+    return (name0, id_list0), (name1, id_list1)
 
 
 def build_id_list(line):
