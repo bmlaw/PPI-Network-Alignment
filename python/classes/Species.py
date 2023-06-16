@@ -20,8 +20,6 @@ species_list = [Species('yeast', 'Saccharomyces cerevisiae S288c', 'S cerevisiae
                 Species('mouse', 'Mus musculus', 'M musculus', 10090),
                 Species('human', 'Homo sapiens', 'H sapiens', 9606)]
 
-print(repr(species_list[0]))
-
 species_dict = {}
 for species in species_list:
   species_dict[species.name] = species
@@ -29,5 +27,5 @@ for species in species_list:
   species_dict[species.long_name] = species
   species_dict[species.taxid] = species
 
-del species_list
+species_list
 

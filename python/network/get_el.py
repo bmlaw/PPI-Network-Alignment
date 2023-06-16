@@ -9,18 +9,20 @@ __credits__ = ["Norman Luo", "Brian Law"]
 import json
 import os
 
-from python.classes.Species import species_dict
-from python.classes.Species import Species
+from python.classes.Species import Species, species_dict, species_list
 from python.classes import Protein
 
 
-def main(species_name=None):
+def main(species_name=None, ensembl_version=None, biogrid_version=None):
   """
 
-
-  @param species_name: filepath to biogrid download to be processed, passed from command line
+  :param species_name: filepath to biogrid download to be processed, passed from command line
                        defaults to hard-coded path in file for manual runs from an IDE
-  @return:
+  :param ensembl_version: version of Ensembl to use; if not specified, function will search the biogrid subfolder for
+                          the latest version
+  :param biogrid_version: version of Ensembl to use; if not specified, function will search the biogrid subfolder for
+                          the latest version
+  :return:
   """
 
   # If run from PyCharm, filenames can be set here manually
@@ -30,21 +32,23 @@ def main(species_name=None):
 
   species = species_dict[species_name]
 
-  filenames = os.listdir('../../ensembl/')
-  file_versions = [int(filename[filename.rfind('-') + 1:filename.rfind('.')]) for filename in filenames if
-                   os.path.isfile(os.path.join('../../ensembl', filename))]
+  if ensembl_version is None:
+    filenames = os.listdir('../../ensembl/')
+    file_versions = [int(filename[filename.rfind('-') + 1:filename.rfind('.')]) for filename in filenames if
+                     os.path.isfile(os.path.join('../../ensembl', filename))]
 
-  latest_ensembl = max(file_versions)
+    ensembl_version = max(file_versions)
 
-  filenames = os.listdir('../../biogrid/')
-  file_versions = [filename[filename.rfind('-') + 1:filename.rfind('.mitab')] for filename in filenames if
-                   os.path.isfile(os.path.join('../../biogrid', filename))]
-  file_versions = [tuple([int(x) for x in version.split('.')]) for version in file_versions]
+  if biogrid_version is None:
+    filenames = os.listdir('../../biogrid/')
+    file_versions = [filename[filename.rfind('-') + 1:filename.rfind('.mitab')] for filename in filenames if
+                     os.path.isfile(os.path.join('../../biogrid', filename))]
+    file_versions = [tuple([int(x) for x in version.split('.')]) for version in file_versions]
 
-  latest_biogrid = '.'.join(map(str, max(file_versions, key=lambda x: (x[0], x[1], x[2]))))
+    biogrid_version = '.'.join(map(str, max(file_versions, key=lambda x: (x[0], x[1], x[2]))))
 
-  ensembl_filepath = f'../../ensembl/{species.short_name.replace(" ", "_").lower()}_ensembl-{latest_ensembl}.txt'
-  biomart_filepath = f'../../biogrid/BIOGRID-ORGANISM-{species.long_name.replace(" ", "_")}-{latest_biogrid}.mitab.txt'
+  ensembl_filepath = f'../../ensembl/{species.short_name.replace(" ", "_").lower()}_ensembl-{ensembl_version}.txt'
+  biomart_filepath = f'../../biogrid/BIOGRID-ORGANISM-{species.long_name.replace(" ", "_")}-{biogrid_version}.mitab.txt'
 
   # read ensembl file for worm
   with open(ensembl_filepath, 'r') as f:
@@ -80,11 +84,9 @@ def main(species_name=None):
       if interaction:
         inter_list1.append(interaction)
 
-  map_list1 = id_to_protein(protein_list, inter_list1, species, latest_biogrid, latest_ensembl)
+  map_list1 = id_to_protein(protein_list, inter_list1, species, ensembl_version, biogrid_version)
 
-
-
-  #print(map_list1)
+  # print(map_list1)
 
 
 # with open(el_file, 'w') as e:
@@ -194,7 +196,7 @@ def build_id_list(line):
 
 
 def id_to_protein(protein_list: list[Protein], interactions: list[(str, list[str]), (str, list[str])],
-                  species: Species, biogrid_version: str, ensembl_version: str) -> list[(Protein, Protein)]:
+                  species: Species, ensembl_version: str, biogrid_version: str) -> list[(Protein, Protein)]:
   """
   Takes a list of Protein objects (with their ID aliases from Ensembl) and a list of protein interactions (with their
   ID alises from BioGRID), and merges the data into a list of protein interactions, stored as a list of tuples of 2
@@ -207,6 +209,9 @@ def id_to_protein(protein_list: list[Protein], interactions: list[(str, list[str
   :param biogrid_version:
   :return:
   """
+  # containers for final interactions
+  remapped_interactions = []
+  unmapped_interactions = []
 
   # count the number of interactions processed
   count = 0
@@ -234,11 +239,19 @@ def id_to_protein(protein_list: list[Protein], interactions: list[(str, list[str
   name_lookup = {x.get_name(): x for x in protein_list}
 
   # take a dict with the swissprot id as the key
+  ensembl_lookup = {x.get_gene_sid(): x for x in protein_list}
   swissprot_lookup = {x.get_swissprot(): x for x in protein_list}
   trembl_lookup = {x.get_trembl(): x for x in protein_list}
+  refseq_lookup = {x.get_refseq(): x for x in protein_list}
 
-  remapped_interactions = []
-  unmapped_interactions = []
+  # Debugging counters for checking protein mapping source efficacy
+  # ncbi_count = 0
+  # ensembl_count = 0
+  # swissprot_count = 0
+  # trembl_count = 0
+  # refseq_count = 0
+  # name_count = 0
+
   for interaction in interactions:
     # keeps track of whether the interaction has been filtered or not
     failure = False
@@ -268,11 +281,38 @@ def id_to_protein(protein_list: list[Protein], interactions: list[(str, list[str
 
       if biogrid_id in ncbi_lookup:
         current = ncbi_lookup[biogrid_id]
+        # ncbi_count += 1
       # If the current protein's NCBI ID from BioGRID does not match one in Ensembl, try matching its other IDs
       else:
         # check if any of the alternate IDs match any of the Ensembl IDs remaining
         for alt_id in interactor[1]:
-          current = swissprot_lookup.get(alt_id, trembl_lookup.get(alt_id, name_lookup.get(alt_id, None)))
+          current = ensembl_lookup.get(alt_id, swissprot_lookup.get(alt_id, trembl_lookup.get(alt_id,
+                                                                                              refseq_lookup.get(alt_id,
+                                                                                                                name_lookup.get(
+                                                                                                                  alt_id,
+                                                                                                                  None)))))
+
+          # Debugging code for checking protein mapping source efficacy
+          # if alt_id in ensembl_lookup:
+          #   current = ensembl_lookup[alt_id]
+          #   ensembl_count += 1
+          #   break
+          # elif alt_id in swissprot_lookup:
+          #   current = swissprot_lookup
+          #   swissprot_count += 1
+          #   break
+          # elif alt_id in trembl_lookup:
+          #   current = swissprot_lookup
+          #   trembl_count += 1
+          #   break
+          # elif alt_id in refseq_lookup:
+          #   current = swissprot_lookup
+          #   refseq_count += 1
+          #   break
+          # elif alt_id in name_lookup:
+          #   current = swissprot_lookup
+          #   name_count += 1
+          #   break
 
       # If the protein failed to be mapped, note it
       if current is None:
@@ -294,8 +334,15 @@ def id_to_protein(protein_list: list[Protein], interactions: list[(str, list[str
       count += 1
       remapped_interactions.append(remapped_interaction)
 
+  # Debugging code for checking protein mapping source efficacy
+  # print(ncbi_count, ensembl_count, swissprot_count, trembl_count, refseq_count, name_count)
+
+  remapped_interactions.sort(key=lambda x: (x[0].get_name().upper(), x[1].get_name().upper()))
+
   ## places output in a form that can be pasted into a spreadsheet ###
-  with open(f'../../networks/{species.short_name.replace(" ", "_").lower()}.network-{ensembl_version}-{biogrid_version}.txt', 'w') as f:
+  with open(
+      f'../../networks/{species.short_name.replace(" ", "_").lower()}.network-{ensembl_version}-{biogrid_version}.txt',
+      'w') as f:
     f.write(f'! Generated using Ensembl {ensembl_version} and BioGRID {biogrid_version}\n')
     f.write("! Total interactions processed: " + str(
       count + count_invalid + non_phys + non_exp + self_loop + interspecies) + "\n")
@@ -303,20 +350,20 @@ def id_to_protein(protein_list: list[Protein], interactions: list[(str, list[str
     f.write("! total filtered unmapped: " + str(count_invalid) + "\n")
     f.write("! % interactions unmapped: " + str(round((count_invalid / count), 5) * 100) + "%\n")
     f.write("! total unmappable IDs (including duplicates): " + str(count_none) + "\n")
-    f.write("! % IDs unmappable (including duplicates): " + str(round((count_none / (count * 2 + count_none)), 5) * 100) + "%\n")
+    f.write("! % IDs unmappable (including duplicates): " + str(round((count_none / (count * 2 + count_none)) * 100, 5)) + "%\n")
     f.write("! total unmappable proteins (excluding duplicates): " + str(len(none_dict)) + "\n")
     f.write("! non-physical interactions filtered out: " + str(non_phys) + "\n")
     f.write("! non-experimental interactions filtered out: " + str(non_exp) + "\n")
     f.write("! self-loops filtered out: " + str(self_loop) + "\n")
     f.write("! interspecies interactions filtered out: " + str(interspecies) + "\n")
     f.write("\n")
+
     for id in none_dict:
       f.write(str(id) + " occurs " + str(none_dict[id]) + " times " + "\t" + str(
         round((none_dict[id] / count_none), 3) * 100) + "%\n")
     f.write("\n")
-    for inter in remapped_interactions:
-      for id in inter:
-        f.write(str(id) + '\t')
+    for interaction in remapped_interactions:
+      f.write(interaction[0].get_name().upper() + '\t' + interaction[1].get_name().upper())
       f.write("\n")
 
   return remapped_interactions
@@ -429,12 +476,11 @@ if __name__ == '__main__':
   if len(unknown_args) == 1:
     main(unknown_args[0])
   else:
-    for species in species_dict:
-      main(species)
+    for species in species_list:
+      print(species)
+      main(species.short_name)
     #  main(species)
-    #main('worm')
-
-
+    # main('worm')
 
 
 # print(retrieve_code())
