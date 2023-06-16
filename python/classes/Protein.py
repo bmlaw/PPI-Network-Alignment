@@ -23,7 +23,7 @@ class Protein:
            self.swissprot == o.swissprot and self.trembl == o.trembl and self.refseq == o.refseq and self.name == o.name
 
   def __str__(self) -> str:
-    return self.get_name()
+    return self.get_p_sid()
 
   def __repr__(self) -> str:
     return f'{self.__class__.__name__}({",".join([repr(v) for v in self.__dict__.values()])})'
@@ -63,7 +63,7 @@ class Protein:
 
   def get_name(self):
     if self.name == "":
-      return self.get_p_sid()
+      return None
     return self.name
 
   def get_refseq(self):

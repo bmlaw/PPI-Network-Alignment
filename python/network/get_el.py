@@ -287,10 +287,7 @@ def id_to_protein(protein_list: list[Protein], interactions: list[(str, list[str
         # check if any of the alternate IDs match any of the Ensembl IDs remaining
         for alt_id in interactor[1]:
           current = ensembl_lookup.get(alt_id, swissprot_lookup.get(alt_id, trembl_lookup.get(alt_id,
-                                                                                              refseq_lookup.get(alt_id,
-                                                                                                                name_lookup.get(
-                                                                                                                  alt_id,
-                                                                                                                  None)))))
+                    refseq_lookup.get(alt_id, name_lookup.get(alt_id, None)))))
 
           # Debugging code for checking protein mapping source efficacy
           # if alt_id in ensembl_lookup:
@@ -337,34 +334,36 @@ def id_to_protein(protein_list: list[Protein], interactions: list[(str, list[str
   # Debugging code for checking protein mapping source efficacy
   # print(ncbi_count, ensembl_count, swissprot_count, trembl_count, refseq_count, name_count)
 
-  remapped_interactions.sort(key=lambda x: (x[0].get_name().upper(), x[1].get_name().upper()))
+  remapped_interactions.sort(key=lambda x: (x[0].get_p_sid().upper(), x[1].get_p_sid().upper()))
 
   ## places output in a form that can be pasted into a spreadsheet ###
-  with open(
-      f'../../networks/{species.short_name.replace(" ", "_").lower()}.network-{ensembl_version}-{biogrid_version}.txt',
-      'w') as f:
-    f.write(f'! Generated using Ensembl {ensembl_version} and BioGRID {biogrid_version}\n')
-    f.write("! Total interactions processed: " + str(
+  with open(f'../../networks/{species.short_name.replace(" ", "_").lower()}.network-{ensembl_version}-{biogrid_version}.txt', 'w') as f1, \
+    open(f'../../networks/SANA/{species.short_name.replace(" ", "_").lower()}.network-{ensembl_version}-{biogrid_version}.txt', 'w') as f2:
+
+    f1.write(f'! Generated using Ensembl {ensembl_version} and BioGRID {biogrid_version}\n')
+    f1.write("! Total interactions processed: " + str(
       count + count_invalid + non_phys + non_exp + self_loop + interspecies) + "\n")
-    f.write("! total interactions mapped successfully: " + str(count) + "\n")
-    f.write("! total filtered unmapped: " + str(count_invalid) + "\n")
-    f.write("! % interactions unmapped: " + str(round((count_invalid / count), 5) * 100) + "%\n")
-    f.write("! total unmappable IDs (including duplicates): " + str(count_none) + "\n")
-    f.write("! % IDs unmappable (including duplicates): " + str(round((count_none / (count * 2 + count_none)) * 100, 5)) + "%\n")
-    f.write("! total unmappable proteins (excluding duplicates): " + str(len(none_dict)) + "\n")
-    f.write("! non-physical interactions filtered out: " + str(non_phys) + "\n")
-    f.write("! non-experimental interactions filtered out: " + str(non_exp) + "\n")
-    f.write("! self-loops filtered out: " + str(self_loop) + "\n")
-    f.write("! interspecies interactions filtered out: " + str(interspecies) + "\n")
-    f.write("\n")
+    f1.write("! total interactions mapped successfully: " + str(count) + "\n")
+    f1.write("! total filtered unmapped: " + str(count_invalid) + "\n")
+    f1.write("! % interactions unmapped: " + str(round((count_invalid / count), 5) * 100) + "%\n")
+    f1.write("! total unmappable IDs (including duplicates): " + str(count_none) + "\n")
+    f1.write("! % IDs unmappable (including duplicates): " + str(round((count_none / (count * 2 + count_none)) * 100, 5)) + "%\n")
+    f1.write("! total unmappable proteins (excluding duplicates): " + str(len(none_dict)) + "\n")
+    f1.write("! non-physical interactions filtered out: " + str(non_phys) + "\n")
+    f1.write("! non-experimental interactions filtered out: " + str(non_exp) + "\n")
+    f1.write("! self-loops filtered out: " + str(self_loop) + "\n")
+    f1.write("! interspecies interactions filtered out: " + str(interspecies) + "\n")
+    f1.write("\n")
 
     for id in none_dict:
-      f.write(str(id) + " occurs " + str(none_dict[id]) + " times " + "\t" + str(
+      f1.write(str(id) + " occurs " + str(none_dict[id]) + " times " + "\t" + str(
         round((none_dict[id] / count_none), 3) * 100) + "%\n")
-    f.write("\n")
+    f1.write("\n")
+
     for interaction in remapped_interactions:
-      f.write(interaction[0].get_name().upper() + '\t' + interaction[1].get_name().upper())
-      f.write("\n")
+      f1.write(interaction[0].get_p_sid().upper() + '\t' + interaction[1].get_p_sid().upper() + '\n')
+      f2.write(interaction[0].get_p_sid().upper() + '\t' + interaction[1].get_p_sid().upper() + '\n')
+
 
   return remapped_interactions
 
