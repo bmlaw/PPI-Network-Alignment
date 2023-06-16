@@ -210,8 +210,8 @@ def id_to_protein(protein_list: list[Protein], interactions: list[(str, list[str
   :return:
   """
   # containers for final interactions
-  remapped_interactions = []
-  unmapped_interactions = []
+  remapped_interactions = set()
+  unmapped_interactions = set()
 
   # count the number of interactions processed
   count = 0
@@ -326,14 +326,19 @@ def id_to_protein(protein_list: list[Protein], interactions: list[(str, list[str
     # only add unfiltered interactions
     if failure:
       count_invalid += 1
-      unmapped_interactions.append(remapped_interaction)
+      unmapped_interactions.add(tuple(remapped_interaction))
     else:
       count += 1
-      remapped_interactions.append(remapped_interaction)
+
+      if remapped_interaction[0].get_p_sid().upper() < remapped_interaction[1].get_p_sid().upper():
+        remapped_interaction[0], remapped_interaction[1] = remapped_interaction[1], remapped_interaction[0]
+
+      remapped_interactions.add(tuple(remapped_interaction))
 
   # Debugging code for checking protein mapping source efficacy
   # print(ncbi_count, ensembl_count, swissprot_count, trembl_count, refseq_count, name_count)
 
+  remapped_interactions = list(remapped_interactions)
   remapped_interactions.sort(key=lambda x: (x[0].get_p_sid().upper(), x[1].get_p_sid().upper()))
 
   ## places output in a form that can be pasted into a spreadsheet ###
