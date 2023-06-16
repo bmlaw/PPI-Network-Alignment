@@ -330,6 +330,7 @@ def id_to_protein(protein_list: list[Protein], interactions: list[(str, list[str
     else:
       count += 1
 
+      # If protein #2 is alphabetically before protein #1, swap the two so they're alphabetically ordered.
       if remapped_interaction[0].get_p_sid().upper() < remapped_interaction[1].get_p_sid().upper():
         remapped_interaction[0], remapped_interaction[1] = remapped_interaction[1], remapped_interaction[0]
 
@@ -343,7 +344,7 @@ def id_to_protein(protein_list: list[Protein], interactions: list[(str, list[str
 
   ## places output in a form that can be pasted into a spreadsheet ###
   with open(f'../../networks/{species.short_name.replace(" ", "_").lower()}.network-{ensembl_version}-{biogrid_version}.txt', 'w') as f1, \
-    open(f'../../networks/SANA/{species.short_name.replace(" ", "_").lower()}.network-{ensembl_version}-{biogrid_version}.txt', 'w') as f2:
+    open(f'../../networks/SANA/{species.short_name.replace(" ", "_").lower()}.network-{ensembl_version}-{biogrid_version}.el', 'w') as f2:
 
     f1.write(f'! Generated using Ensembl {ensembl_version} and BioGRID {biogrid_version}\n')
     f1.write("! Total interactions processed: " + str(
@@ -484,7 +485,7 @@ if __name__ == '__main__':
       print(species)
       main(species.short_name)
     #  main(species)
-    # main('worm')
+    #main('zebrafish')
 
 
 # print(retrieve_code())
