@@ -52,8 +52,8 @@ def main(species_name=None, ensembl_version=None, biogrid_version=None):
 
   # read ensembl file for worm
   with open(ensembl_filepath, 'r') as f:
-    # initialize a list of proteins
-    protein_list = []
+    # initialize a dictionary of Proteins, with key as their Ensembl gene IDs for easy lookup
+    protein_dict = {}
 
     # skip first line
     f.readline()
@@ -61,8 +61,13 @@ def main(species_name=None, ensembl_version=None, biogrid_version=None):
     for line in f:
       # List of Protein objects
       line = line.split('\t')
-      new_protein = Protein.Protein(line)
-      protein_list.append(new_protein)
+
+      gene_id = line[0]
+      if gene_id not in protein_dict:
+        new_protein = Protein.Protein(line)
+      else:
+        old_protein = protein_dict[gene_id]
+        # TODO: add any new IDs from the to the old Protein
 
   # receive the physical and experimental codes
   good_codes = retrieve_code()
@@ -195,14 +200,14 @@ def build_id_list(line):
   return id_list
 
 
-def id_to_protein(protein_list: list[Protein], interactions: list[(str, list[str]), (str, list[str])],
+def id_to_protein(protein_dict: dict[str, Protein], interactions: list[(str, list[str]), (str, list[str])],
                   species: Species, ensembl_version: str, biogrid_version: str) -> list[(Protein, Protein)]:
   """
-  Takes a list of Protein objects (with their ID aliases from Ensembl) and a list of protein interactions (with their
-  ID alises from BioGRID), and merges the data into a list of protein interactions, stored as a list of tuples of 2
+  Takes Proteins (with their ID aliases from Ensembl) and a list of protein interactions (with their
+  ID aliases from BioGRID), and merges the data into a list of protein interactions, stored as a list of tuples of 2
   Protein objects.
 
-  :param protein_list: list of protein objects from ensembl
+  :param protein_dict: dictionary mapping Ensembl Gene IDs to Protein objects built from Ensembl data
   :param interactions: list of PPIs, each a tuple of 2 interacting proteins, each a tuple with a string name and a
                        list of alternate ID strings from BioGRID
   :param ensembl_version:
@@ -232,17 +237,16 @@ def id_to_protein(protein_list: list[Protein], interactions: list[(str, list[str
   interspecies = 0
 
   # take a dictionary with the entrezgene as the key
-  ncbi_lookup = {x.get_ncbi(): x for x in protein_list}
+  ncbi_lookup = {y: protein_dict[x] for x in protein_dict for y in protein_dict[x].ncbis}
 
   # also take a dict with the name as the key
   # in case the entrezgene fails
-  name_lookup = {x.get_name(): x for x in protein_list}
+  name_lookup = {y: protein_dict[x] for x in protein_dict for y in protein_dict[x].names}
 
   # take a dict with the swissprot id as the key
-  ensembl_lookup = {x.get_gene_sid(): x for x in protein_list}
-  swissprot_lookup = {x.get_swissprot(): x for x in protein_list}
-  trembl_lookup = {x.get_trembl(): x for x in protein_list}
-  refseq_lookup = {x.get_refseq(): x for x in protein_list}
+  swissprot_lookup = {y: protein_dict[x] for x in protein_dict for y in protein_dict[x].swissprots}
+  trembl_lookup = {y: protein_dict[x] for x in protein_dict for y in protein_dict[x].trembls}
+  refseq_lookup = {y: protein_dict[x] for x in protein_dict for y in protein_dict[x].refseqs}
 
   # Debugging counters for checking protein mapping source efficacy
   # ncbi_count = 0
@@ -286,7 +290,7 @@ def id_to_protein(protein_list: list[Protein], interactions: list[(str, list[str
       else:
         # check if any of the alternate IDs match any of the Ensembl IDs remaining
         for alt_id in interactor[1]:
-          current = ensembl_lookup.get(alt_id, swissprot_lookup.get(alt_id, trembl_lookup.get(alt_id,
+          current = protein_dict.get(alt_id, swissprot_lookup.get(alt_id, trembl_lookup.get(alt_id,
                     refseq_lookup.get(alt_id, name_lookup.get(alt_id, None)))))
 
           # Debugging code for checking protein mapping source efficacy
@@ -331,7 +335,7 @@ def id_to_protein(protein_list: list[Protein], interactions: list[(str, list[str
       count += 1
 
       # If protein #2 is alphabetically before protein #1, swap the two so they're alphabetically ordered.
-      if remapped_interaction[0].get_p_sid().upper() < remapped_interaction[1].get_p_sid().upper():
+      if remapped_interaction[0].gene_id() < remapped_interaction[1].gene_id():
         remapped_interaction[0], remapped_interaction[1] = remapped_interaction[1], remapped_interaction[0]
 
       remapped_interactions.add(tuple(remapped_interaction))
@@ -340,7 +344,16 @@ def id_to_protein(protein_list: list[Protein], interactions: list[(str, list[str
   # print(ncbi_count, ensembl_count, swissprot_count, trembl_count, refseq_count, name_count)
 
   remapped_interactions = list(remapped_interactions)
-  remapped_interactions.sort(key=lambda x: (x[0].get_p_sid().upper(), x[1].get_p_sid().upper()))
+  remapped_interactions.sort(key=lambda x: (x[0].gene_id(), x[1].gene_id()))
+
+  # for i in range(len(remapped_interactions) - 1):
+  #   if remapped_interactions[i][0].get_ncbi().upper() == remapped_interactions[i+1][0].get_ncbi().upper() and \
+  #      remapped_interactions[i][1].get_ncbi().upper() == remapped_interactions[i + 1][1].get_ncbi().upper() and \
+  #      remapped_interactions[i][0] != remapped_interactions[i+1][0] and remapped_interactions[i][1] != remapped_interactions[i+1][1]:
+  #     print(remapped_interactions[i])
+  #     print(remapped_interactions[i+1])
+  #     print('')
+
 
   ## places output in a form that can be pasted into a spreadsheet ###
   with open(f'../../networks/{species.short_name.replace(" ", "_").lower()}.network-{ensembl_version}-{biogrid_version}.txt', 'w') as f1, \
@@ -367,8 +380,8 @@ def id_to_protein(protein_list: list[Protein], interactions: list[(str, list[str
     f1.write("\n")
 
     for interaction in remapped_interactions:
-      f1.write(interaction[0].get_p_sid().upper() + '\t' + interaction[1].get_p_sid().upper() + '\n')
-      f2.write(interaction[0].get_p_sid().upper() + '\t' + interaction[1].get_p_sid().upper() + '\n')
+      f1.write(interaction[0].gene_id() + '\t' + interaction[1].gene_id() + '\n')
+      f2.write(interaction[0].gene_id() + '\t' + interaction[1].gene_id() + '\n')
 
 
   return remapped_interactions
@@ -485,7 +498,7 @@ if __name__ == '__main__':
       print(species)
       main(species.short_name)
     #  main(species)
-    #main('zebrafish')
+    #main('rat')
 
 
 # print(retrieve_code())
