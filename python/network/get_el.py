@@ -494,11 +494,11 @@ if __name__ == '__main__':
   if len(unknown_args) == 1:
     main(unknown_args[0])
   else:
-    for species in species_list:
-      print(species)
-      main(species.short_name)
+    #for species in species_list:
+    #  print(species)
+    #  main(species.short_name)
     #  main(species)
-    #main('rat')
+    main()
 
 
 # print(retrieve_code())
