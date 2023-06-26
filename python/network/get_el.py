@@ -56,41 +56,33 @@ def main(species_name=None, ensembl_version=None, biogrid_version=None):
 
   # read ensembl file with swissprot, trembl and refseq
   with open(ensembl_filepath_others, 'r') as f:
-
+    f.readline()  # skips the first line
     for line in f:
-      # skip the lines with comments
-      if line[0] == '#':
-        continue
 
       # List of Protein objects
       line = line.strip().split('\t')
       gene_id = line[0]
       if gene_id not in protein_dict:
-        new_protein = Protein.Protein(gene_id)
-        new_protein.add_ids(line)
-        protein_dict[gene_id] = new_protein
+        protein = Protein.Protein(gene_id)
+        protein_dict[gene_id] = protein
       else:
-        old_protein = protein_dict[gene_id]
-        old_protein.add_ids(line)
+        protein = protein_dict[gene_id]
+      protein.add_other_ids(line)
 
-  # read ensembl file with swissprot, trembl and refseq
+  # read ensembl file with ncbi ids
   with open(ensembl_filepath_ncbi, 'r') as f:
-
+    f.readline() # skips the first line
     for line in f:
-      # skip the lines with comments
-      if line[0] == '#':
-        continue
 
       # List of Protein objects
       line = line.strip().split('\t')
       gene_id = line[0]
       if gene_id not in protein_dict:
-        new_protein = Protein.Protein(gene_id)
-        new_protein.add_ids(line)
-        protein_dict[gene_id] = new_protein
+        protein = Protein.Protein(gene_id)
+        protein_dict[gene_id] = protein
       else:
-        old_protein = protein_dict[gene_id]
-        old_protein.add_ids(line)
+        protein = protein_dict[gene_id]
+      protein.add_ncbi_ids(line)
 
   # receive the physical and experimental codes
   good_codes = retrieve_code()
