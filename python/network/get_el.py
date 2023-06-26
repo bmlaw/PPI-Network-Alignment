@@ -55,19 +55,23 @@ def main(species_name=None, ensembl_version=None, biogrid_version=None):
     # initialize a dictionary of Proteins, with key as their Ensembl gene IDs for easy lookup
     protein_dict = {}
 
-    # skip first line
-    f.readline()
-
     for line in f:
-      # List of Protein objects
-      line = line.split('\t')
+      # skip the lines with comments
+      if line[0] == '#':
+        continue
 
+      # List of Protein objects
+      line = line.strip().split('\t')
       gene_id = line[0]
       if gene_id not in protein_dict:
-        new_protein = Protein.Protein(line)
+        new_protein = Protein.Protein(gene_id)
+        new_protein.add_ids(line)
+        protein_dict[gene_id] = new_protein
       else:
         old_protein = protein_dict[gene_id]
-        # TODO: add any new IDs from the to the old Protein
+        old_protein.add_ids(line)
+
+    print(protein_dict['YPL078C'])
 
   # receive the physical and experimental codes
   good_codes = retrieve_code()
@@ -89,7 +93,7 @@ def main(species_name=None, ensembl_version=None, biogrid_version=None):
       if interaction:
         inter_list1.append(interaction)
 
-  map_list1 = id_to_protein(protein_list, inter_list1, species, ensembl_version, biogrid_version)
+  map_list1 = id_to_protein(protein_dict, inter_list1, species, ensembl_version, biogrid_version)
 
   # print(map_list1)
 
@@ -333,9 +337,8 @@ def id_to_protein(protein_dict: dict[str, Protein], interactions: list[(str, lis
       unmapped_interactions.add(tuple(remapped_interaction))
     else:
       count += 1
-
       # If protein #2 is alphabetically before protein #1, swap the two so they're alphabetically ordered.
-      if remapped_interaction[0].gene_id() < remapped_interaction[1].gene_id():
+      if remapped_interaction[0].gene_id < remapped_interaction[1].gene_id:
         remapped_interaction[0], remapped_interaction[1] = remapped_interaction[1], remapped_interaction[0]
 
       remapped_interactions.add(tuple(remapped_interaction))
@@ -344,7 +347,7 @@ def id_to_protein(protein_dict: dict[str, Protein], interactions: list[(str, lis
   # print(ncbi_count, ensembl_count, swissprot_count, trembl_count, refseq_count, name_count)
 
   remapped_interactions = list(remapped_interactions)
-  remapped_interactions.sort(key=lambda x: (x[0].gene_id(), x[1].gene_id()))
+  remapped_interactions.sort(key=lambda x: (x[0].gene_id, x[1].gene_id))
 
   # for i in range(len(remapped_interactions) - 1):
   #   if remapped_interactions[i][0].get_ncbi().upper() == remapped_interactions[i+1][0].get_ncbi().upper() and \
@@ -380,8 +383,8 @@ def id_to_protein(protein_dict: dict[str, Protein], interactions: list[(str, lis
     f1.write("\n")
 
     for interaction in remapped_interactions:
-      f1.write(interaction[0].gene_id() + '\t' + interaction[1].gene_id() + '\n')
-      f2.write(interaction[0].gene_id() + '\t' + interaction[1].gene_id() + '\n')
+      f1.write(interaction[0].gene_id + '\t' + interaction[1].gene_id + '\n')
+      f2.write(interaction[0].gene_id + '\t' + interaction[1].gene_id + '\n')
 
 
   return remapped_interactions
@@ -488,8 +491,8 @@ if __name__ == '__main__':
   ap = ArgumentParser()
 
   args, unknown_args = ap.parse_known_args()
-  print(args)
-  print(unknown_args)
+  # print(args)
+  # print(unknown_args)
 
   if len(unknown_args) == 1:
     main(unknown_args[0])
