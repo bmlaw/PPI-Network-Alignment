@@ -13,6 +13,22 @@ class Protein:
     self.swissprots = set()
     self.trembls = set()
     self.names = set()
+    self.refseqs = set()
+
+  def add_ids(self, list):
+    self.t_ids.add(list[1])
+    self.p_sids.add(list[2])
+    if len(list) == 5:
+      self.names.add(list[3])
+      self.ncbis.add(list[4])
+    elif len(list) == 7:
+      self.t_ids.add(list[1])
+      self.p_sids.add(list[2])
+      self.names.add(list[3])
+      self.swissprots.add(list[4])
+      self.trembls.add(list[5])
+      self.refseqs.add(list[6])
+    return self
 
   def __eq__(self, o: object) -> bool:
     if not isinstance(o, Protein):
