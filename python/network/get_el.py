@@ -47,13 +47,15 @@ def main(species_name=None, ensembl_version=None, biogrid_version=None):
 
     biogrid_version = '.'.join(map(str, max(file_versions, key=lambda x: (x[0], x[1], x[2]))))
 
-  ensembl_filepath = f'../../ensembl/{species.short_name.replace(" ", "_").lower()}_ensembl-{ensembl_version}.txt'
+  ensembl_filepath_others = f'../../ensembl/{species.short_name.replace(" ", "_").lower()}_ensembl_others-{ensembl_version}.txt'
+  ensembl_filepath_ncbi = f'../../ensembl/{species.short_name.replace(" ", "_").lower()}_ensembl_ncbi-{ensembl_version}.txt'
   biomart_filepath = f'../../biogrid/BIOGRID-ORGANISM-{species.long_name.replace(" ", "_")}-{biogrid_version}.mitab.txt'
 
-  # read ensembl file for worm
-  with open(ensembl_filepath, 'r') as f:
-    # initialize a dictionary of Proteins, with key as their Ensembl gene IDs for easy lookup
-    protein_dict = {}
+  # initialize a dictionary of Proteins, with key as their Ensembl gene IDs for easy lookup
+  protein_dict = {}
+
+  # read ensembl file with swissprot, trembl and refseq
+  with open(ensembl_filepath_others, 'r') as f:
 
     for line in f:
       # skip the lines with comments
@@ -71,7 +73,24 @@ def main(species_name=None, ensembl_version=None, biogrid_version=None):
         old_protein = protein_dict[gene_id]
         old_protein.add_ids(line)
 
-    print(protein_dict['YPL078C'])
+  # read ensembl file with swissprot, trembl and refseq
+  with open(ensembl_filepath_ncbi, 'r') as f:
+
+    for line in f:
+      # skip the lines with comments
+      if line[0] == '#':
+        continue
+
+      # List of Protein objects
+      line = line.strip().split('\t')
+      gene_id = line[0]
+      if gene_id not in protein_dict:
+        new_protein = Protein.Protein(gene_id)
+        new_protein.add_ids(line)
+        protein_dict[gene_id] = new_protein
+      else:
+        old_protein = protein_dict[gene_id]
+        old_protein.add_ids(line)
 
   # receive the physical and experimental codes
   good_codes = retrieve_code()
