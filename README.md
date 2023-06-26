@@ -85,7 +85,8 @@ For details not covered in this file, refer to the tutorial included in Wayne's 
 Before running SANA, make sure the file preparation processes described have been completed.
 
 Here is an example to run SANA (run it under SANA directory):
-`./sana -fg1 RNorvegicus.el -fg2 HSapiens.el -ec 0.3 -seq 0.7 -t 100`
+`./sana -fg1 ../PPI-Network-Alignment/networks/SANA/s_cerevisiae.network-109-4.4.222.el -fg2 ../PPI-Network-Alignment/networks/SANA/s_cerevisiae.network-109-4.4.222.el -ec 1.0 -ts 100 -tolerance 0
+`
 
 Note:
 
