@@ -236,14 +236,16 @@ def id_to_protein(protein_dict: dict[str, Protein], interactions: list[(str, lis
   # count the number of interactions processed
   count = 0
 
-  # count the amount of unmapped id's
+  # count the number of unmapped id's
   count_none = 0
-
-  # dict of unmapped id's with name as key and count as value
   none_dict = {}
 
   # count the valid interactions that weren't filtered
   count_invalid = 0
+
+  # count the # interations mapped to noncoding genes
+  count_noncoding = 0
+  noncoding_dict = {}
 
   # other trackers
   non_phys = 0
@@ -339,6 +341,10 @@ def id_to_protein(protein_dict: dict[str, Protein], interactions: list[(str, lis
         count_none += 1
 
         failure = True
+      elif len(current.p_ids) == 0:
+        noncoding_dict[current] = noncoding_dict.get(current, 0) + 1
+        count_noncoding += 1
+        failure = True
 
       remapped_interaction.append(current)
 
@@ -358,7 +364,7 @@ def id_to_protein(protein_dict: dict[str, Protein], interactions: list[(str, lis
   # print(ncbi_count, ensembl_count, swissprot_count, trembl_count, refseq_count, name_count)
 
   remapped_interactions = list(remapped_interactions)
-  remapped_interactions.sort(key=lambda x: (x[0].gene_id, x[1].gene_id))
+  remapped_interactions.sort(key=lambda x: (x[0].gene_id.upper(), x[1].gene_id.upper()))
 
   # for i in range(len(remapped_interactions) - 1):
   #   if remapped_interactions[i][0].get_ncbi().upper() == remapped_interactions[i+1][0].get_ncbi().upper() and \
@@ -368,30 +374,37 @@ def id_to_protein(protein_dict: dict[str, Protein], interactions: list[(str, lis
   #     print(remapped_interactions[i+1])
   #     print('')
 
+  total_processed = count + count_invalid + non_phys + non_exp + self_loop + interspecies
 
   ## places output in a form that can be pasted into a spreadsheet ###
   with open(f'../../networks/{species.short_name.replace(" ", "_").lower()}.network-{ensembl_version}-{biogrid_version}.txt', 'w') as f1, \
     open(f'../../networks/SANA/{species.short_name.replace(" ", "_").lower()}.network-{ensembl_version}-{biogrid_version}.el', 'w') as f2:
 
     f1.write(f'! Generated using Ensembl {ensembl_version} and BioGRID {biogrid_version}\n')
-    f1.write("! Total interactions processed: " + str(
-      count + count_invalid + non_phys + non_exp + self_loop + interspecies) + "\n")
-    f1.write("! total interactions mapped successfully: " + str(count) + "\n")
-    f1.write("! total filtered unmapped: " + str(count_invalid) + "\n")
-    f1.write("! % interactions unmapped: " + str(round((count_invalid / count), 5) * 100) + "%\n")
-    f1.write("! total unmappable IDs (including duplicates): " + str(count_none) + "\n")
-    f1.write("! % IDs unmappable (including duplicates): " + str(round((count_none / (count * 2 + count_none)) * 100, 5)) + "%\n")
-    f1.write("! total unmappable proteins (excluding duplicates): " + str(len(none_dict)) + "\n")
+    f1.write("! Total interactions processed: " + str(total_processed) + "\n")
+    f1.write(f'! {count} total interactions mapped successfully into {len(remapped_interactions)} unique interactions\n')
     f1.write("! non-physical interactions filtered out: " + str(non_phys) + "\n")
     f1.write("! non-experimental interactions filtered out: " + str(non_exp) + "\n")
     f1.write("! self-loops filtered out: " + str(self_loop) + "\n")
     f1.write("! interspecies interactions filtered out: " + str(interspecies) + "\n")
-    f1.write("\n")
-
-    for id in none_dict:
-      f1.write(str(id) + " occurs " + str(none_dict[id]) + " times " + "\t" + str(
-        round((none_dict[id] / count_none), 3) * 100) + "%\n")
-    f1.write("\n")
+    f1.write(f'! interactions mapped to invalid "proteins": {count_invalid}\n')
+    f1.write(f'! % interactions mapped to invalid "proteins": {round((count_invalid / total_processed) * 100, 3)}%\n')
+    f1.write("! total interactions with unmappable IDs (including duplicates): " + str(count_none) + "\n")
+    f1.write("! % IDs unmappable (including duplicates): " + str(round((count_none / (count * 2 + count_none)) * 100, 3)) + "%\n")
+    f1.write("! total unmappable proteins (excluding duplicates): " + str(len(none_dict)) + "\n")
+    f1.write("! total interactions with noncoding genes (including duplicates): " + str(count_noncoding) + "\n")
+    f1.write(f'! % IDs mapped to noncoding genes (including duplicates): {round((count_noncoding / (count * 2 + count_noncoding)) * 100, 3)}%\n')
+    f1.write("! total mapped noncoding proteins (excluding duplicates): " + str(len(noncoding_dict)) + "\n")
+    f1.write("!\n")
+    f1.write('! Non-coding genes:\n')
+    for protein in sorted(noncoding_dict, key=lambda x: x.gene_id.upper()):
+      f1.write(f'! {protein.gene_id} occurs {noncoding_dict[protein]} times\t{round((noncoding_dict[protein] / total_processed) * 100, 3)}%\n')
+    f1.write("!\n")
+    f1.write('! Non-existent proteins:\n')
+    for gene_id in sorted(none_dict, key=lambda x: none_dict[x], reverse=True):
+      f1.write(str(gene_id) + " occurs " + str(none_dict[gene_id]) + " times " + "\t" + str(
+        round((none_dict[gene_id] / total_processed) * 100, 3)) + "%\n")
+    f1.write("!\n")
 
     for interaction in remapped_interactions:
       f1.write(interaction[0].gene_id + '\t' + interaction[1].gene_id + '\n')
@@ -433,11 +446,11 @@ def list_to_dict(map_list):
 
 def retrieve_code() -> (set[str], set[str]):
   """
-    Extracts data from physical and experimental interaction files
-    and places them into two respective sets.
+  Extracts data from physical and experimental interaction files
+  and places them into two respective sets.
 
-    :return: 2 sets of strings, with MI codes for physical interactions and experimentally-detected interaction
-    """
+  :return: 2 sets of strings, with MI codes for physical interactions and experimentally-detected interaction
+  """
   # open both phys and exp files to read
   physical_codes = open("physical_interaction_codes.txt", 'r')
   experimental_codes = open("experimental_detected_codes.txt", 'r')
@@ -508,11 +521,10 @@ if __name__ == '__main__':
   if len(unknown_args) == 1:
     main(unknown_args[0])
   else:
-    #for species in species_list:
-    #  print(species)
-    #  main(species.short_name)
-    #  main(species)
-    main()
+    for species in species_list:
+      print(species)
+      main(species.short_name)
+    #main()
 
 
 # print(retrieve_code())

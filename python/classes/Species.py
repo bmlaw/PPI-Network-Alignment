@@ -27,5 +27,3 @@ for species in species_list:
   species_dict[species.long_name] = species
   species_dict[species.taxid] = species
 
-species_list
-
