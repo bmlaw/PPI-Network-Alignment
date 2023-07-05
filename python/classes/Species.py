@@ -13,7 +13,7 @@ class Species:
     return f'Species({self.name}, {self.long_name}, {self.short_name}, {self.taxid})'
 
 
-species_list = [Species('yeast', 'Saccharomyces cerevisiae S288c', 'S cerevisiae', 4932),
+species_list = [Species('yeast', 'Saccharomyces cerevisiae s288c', 'S cerevisiae', 4932),
                 Species('worm', 'Caenorhabditis elegans', 'C elegans', 6239),
                 #Species('zebrafish', 'Danio rerio', 'D rerio', 7955),
                 Species('rat', 'Rattus norvegicus', 'R norvegicus', 10116),

@@ -83,16 +83,3 @@ class Protein:
   def __hash__(self) -> int:
     return hash(self.gene_id)
 
-# subclass JSONEncoder
-class ProteinEncoder(JSONEncoder):
-  def default(self, o):
-    return o.__dict__
-
-
-  # d = {x.get_name(): x for x in list_of_mappings}
-  # d['ITSN-1'].get_swissprot()
-
-# if __name__ == '__main__':
-#     p = Protein(['1', '2', '3', '4', '5', '6', '7'])
-#     print(p)
-#     print(p.__dict__)

@@ -9,9 +9,10 @@ __credits__ = ["Norman Luo", "Brian Law"]
 
 import os
 
-from python.classes.Species import Species, species_dict, species_list
+from python.classes import Species
 from python.classes import Protein
-
+from python.classes import Network
+import python.utility as utility
 
 
 def main(species_name=None, ensembl_version=None, biogrid_version=None):
@@ -31,59 +32,29 @@ def main(species_name=None, ensembl_version=None, biogrid_version=None):
     # hold filepaths as strings
     species_name = "yeast"
 
-  species = species_dict[species_name]
+  species = utility.get_species(species_name)
 
   if ensembl_version is None:
-    filenames = os.listdir('../../ensembl/')
+    filenames = os.listdir(f'{utility.get_project_root()}/ensembl/')
     file_versions = [int(filename[filename.rfind('-') + 1:filename.rfind('.')]) for filename in filenames if
-                     os.path.isfile(os.path.join('../../ensembl', filename))]
+                     os.path.isfile(os.path.join(f'{utility.get_project_root()}/ensembl', filename))]
 
     ensembl_version = max(file_versions)
 
   if biogrid_version is None:
-    filenames = os.listdir('../../biogrid/')
+    filenames = os.listdir(f'{utility.get_project_root()}/biogrid/')
     file_versions = [filename[filename.rfind('-') + 1:filename.rfind('.mitab')] for filename in filenames if
-                     os.path.isfile(os.path.join('../../biogrid', filename))]
+                     os.path.isfile(os.path.join(f'{utility.get_project_root()}/biogrid', filename))]
     file_versions = [tuple([int(x) for x in version.split('.')]) for version in file_versions]
 
     biogrid_version = '.'.join(map(str, max(file_versions, key=lambda x: (x[0], x[1], x[2]))))
 
-  ensembl_filepath_others = f'../../ensembl/{species.short_name.replace(" ", "_").lower()}_ensembl_others-{ensembl_version}.txt'
-  ensembl_filepath_ncbi = f'../../ensembl/{species.short_name.replace(" ", "_").lower()}_ensembl_ncbi-{ensembl_version}.txt'
-  biomart_filepath = f'../../biogrid/BIOGRID-ORGANISM-{species.long_name.replace(" ", "_")}-{biogrid_version}.mitab.txt'
+  ensembl_filepath_others = f'{utility.get_project_root()}/ensembl/{species.short_name.replace(" ", "_").lower()}_ensembl_others-{ensembl_version}.txt'
+  ensembl_filepath_ncbi = f'{utility.get_project_root()}/ensembl/{species.short_name.replace(" ", "_").lower()}_ensembl_ncbi-{ensembl_version}.txt'
+  biomart_filepath = f'{utility.get_project_root()}/biogrid/BIOGRID-ORGANISM-{species.long_name.replace(" ", "_")}-{biogrid_version}.mitab.txt'
 
   # initialize a dictionary of Proteins, with key as their Ensembl gene IDs for easy lookup
-  protein_dict = {}
-
-  # read ensembl file with swissprot, trembl and refseq
-  with open(ensembl_filepath_others, 'r') as f:
-    f.readline()  # skips the first line
-    for line in f:
-
-      # List of Protein objects
-      line = line.strip().split('\t')
-      gene_id = line[0]
-      if gene_id not in protein_dict:
-        protein = Protein.Protein(gene_id)
-        protein_dict[gene_id] = protein
-      else:
-        protein = protein_dict[gene_id]
-      protein.add_other_ids(line)
-
-  # read ensembl file with ncbi ids
-  with open(ensembl_filepath_ncbi, 'r') as f:
-    f.readline() # skips the first line
-    for line in f:
-
-      # List of Protein objects
-      line = line.strip().split('\t')
-      gene_id = line[0]
-      if gene_id not in protein_dict:
-        protein = Protein.Protein(gene_id)
-        protein_dict[gene_id] = protein
-      else:
-        protein = protein_dict[gene_id]
-      protein.add_ncbi_ids(line)
+  protein_dict = utility.get_ensembl_data(species_name, ensembl_version)
 
   # receive the physical and experimental codes
   good_codes = retrieve_code()
@@ -100,7 +71,7 @@ def main(species_name=None, ensembl_version=None, biogrid_version=None):
       line = line.rstrip()
       line = line.split("\n")
 
-      interaction = get_gene_ids(line, good_codes)
+      interaction = Network.get_gene_ids(line, good_codes)
 
       if interaction:
         inter_list1.append(interaction)
@@ -138,86 +109,14 @@ def extract_name(filepath):
   return species
 
 
-def get_gene_ids(line, good_codes) -> ((str, [str]), (str, [str])):
-  """
-    Extracts data from BioGRID and filters 'bad' interactions
-
-    :param line: str line from BioGRID file
-    :param good_codes: tuple of sets of physical and experimental codes
-    :return: a tuple, representing a PPI, with 2 inner tuples, each with the EntrezGene ID and a list of
-             the other listed BioGRID IDs for each interactor
-    """
-
-  # create a list contains strs after line splitted by tabs
-  by_tab = line[0].split('\t')
-
-  # set of physical codes
-  phys_codes = good_codes[0]
-
-  # set of experimental codes
-  exp_codes = good_codes[1]
-
-  # protein names in interaction
-  name0 = by_tab[0].split(':')[1]
-  name1 = by_tab[1].split(':')[1]
-
-  # self-loop filter
-  if name0 == name1:
-    return 'self',
-
-  taxid0 = by_tab[9].split(':')[1].strip()
-  taxid1 = by_tab[10].split(':')[1].strip()
-
-  # interspecies interaction filter (check taxids)
-  if taxid0 != taxid1:
-    return 'intersp',
-
-  interaction_type = by_tab[11].split(':')[2][0:4]
-
-  interaction_detection = by_tab[6].split(':')[2][0:4]
-
-  # direct interaction only
-  if interaction_type not in phys_codes:
-    return 'phys',
-
-  if interaction_detection not in exp_codes:
-    return 'exp',
-
-  gene_id = []
-  # gene_id = [id0, id1]
-  for i in range(0, 2):
-    by_colon = by_tab[i].split(':')
-    gene_id.append(by_colon[1])
-
-  if gene_id[0] == gene_id[1]:  # is this necessary?
-    return 'self',
-
-  id_list0 = build_id_list(by_tab[2])
-  id_list1 = build_id_list(by_tab[3])
-
-  return (name0, id_list0), (name1, id_list1)
 
 
-def build_id_list(line):
-  """
-    Helper function for building a list of ids from the biogrid file
-    under the alt ids for interactors A and B
 
-    :param line: line of the BioGRID file that includes alternate ids
-    :return: list of alternate ids in the order that they appear in the file
-    """
-  ids = line.split("|")
-
-  id_list = []
-  for id_type in ids:
-    id_type = id_type.split(":")
-    id_list.append(id_type[1])
-
-  return id_list
-
-
-def id_to_protein(protein_dict: dict[str, Protein], interactions: list[(str, list[str]), (str, list[str])],
-                  species: Species, ensembl_version: str, biogrid_version: str) -> list[(Protein, Protein)]:
+def id_to_protein(protein_dict: dict[str, Protein.Protein], 
+                  interactions: list[tuple[tuple[str, dict[str: list[str]]], tuple[str, dict[str: list[str]]]]],
+                  species: Species, 
+                  ensembl_version: str, 
+                  biogrid_version: str) -> list[(Protein.Protein, Protein.Protein)]:
   """
   Takes Proteins (with their ID aliases from Ensembl) and a list of protein interactions (with their
   ID aliases from BioGRID), and merges the data into a list of protein interactions, stored as a list of tuples of 2
@@ -254,6 +153,10 @@ def id_to_protein(protein_dict: dict[str, Protein], interactions: list[(str, lis
   self_loop = 0
   interspecies = 0
 
+  ensembl_lookup = {x: protein_dict[x] for x in protein_dict} | \
+                   {y: protein_dict[x] for x in protein_dict for y in protein_dict[x].t_ids} | \
+                   {y: protein_dict[x] for x in protein_dict for y in protein_dict[x].p_ids}
+
   # take a dictionary with the entrezgene as the key
   ncbi_lookup = {y: protein_dict[x] for x in protein_dict for y in protein_dict[x].ncbis}
 
@@ -267,12 +170,12 @@ def id_to_protein(protein_dict: dict[str, Protein], interactions: list[(str, lis
   refseq_lookup = {y: protein_dict[x] for x in protein_dict for y in protein_dict[x].refseqs}
 
   # Debugging counters for checking protein mapping source efficacy
-  # ncbi_count = 0
-  # ensembl_count = 0
-  # swissprot_count = 0
-  # trembl_count = 0
-  # refseq_count = 0
-  # name_count = 0
+  ncbi_count = 0
+  ensembl_count = 0
+  swissprot_count = 0
+  trembl_count = 0
+  refseq_count = 0
+  name_count = 0
 
   for interaction in interactions:
     # Keeps track of whether the interaction has been filtered or not. Each interactor may flip this to True if
@@ -306,35 +209,47 @@ def id_to_protein(protein_dict: dict[str, Protein], interactions: list[(str, lis
       # First look-up is BioGRID's NCBI IDs
       if biogrid_id in ncbi_lookup:
         current = ncbi_lookup[biogrid_id]
-        # ncbi_count += 1
+        ncbi_count += 1
+      
       # If the current protein's NCBI ID from BioGRID does not match one in Ensembl, try matching its other IDs
-      else:
-        # check if any of the alternate IDs match any of the Ensembl IDs remaining
-        for alt_id in interactor[1]:
-          current = protein_dict.get(alt_id, swissprot_lookup.get(alt_id, trembl_lookup.get(alt_id,
-                    refseq_lookup.get(alt_id, name_lookup.get(alt_id, None)))))
+      if current is None:
+        for alt_id in interactor[1]['entrez gene/locuslink']:
+          current = ensembl_lookup.get(alt_id)
+          if current is not None:
+            ensembl_count += 1
+            break
 
-          # Debugging code for checking protein mapping source efficacy
-          # if alt_id in ensembl_lookup:
-          #   current = ensembl_lookup[alt_id]
-          #   ensembl_count += 1
-          #   break
-          # elif alt_id in swissprot_lookup:
-          #   current = swissprot_lookup
-          #   swissprot_count += 1
-          #   break
-          # elif alt_id in trembl_lookup:
-          #   current = swissprot_lookup
-          #   trembl_count += 1
-          #   break
-          # elif alt_id in refseq_lookup:
-          #   current = swissprot_lookup
-          #   refseq_count += 1
-          #   break
-          # elif alt_id in name_lookup:
-          #   current = swissprot_lookup
-          #   name_count += 1
-          #   break
+      # if current is None:
+      #   for alt_id in interactor[1]['entrez gene/locuslink']:
+      #     current = ensembl_lookup.get(alt_id.replace('CELE_', ''))
+      
+      if current is None and 'uniprot/swiss-prot' in interactor[1]:
+        for alt_id in interactor[1]['uniprot/swiss-prot']:
+          current = swissprot_lookup.get(alt_id)
+          if current is not None:
+            swissprot_count += 1
+            break
+
+      if current is None and 'uniprot/trembl' in interactor[1]:
+        for alt_id in interactor[1]['uniprot/trembl']:
+          current = trembl_lookup.get(alt_id)
+          if current is not None:
+            trembl_count += 1
+            break
+
+      if current is None and 'refseq' in interactor[1]:
+        for alt_id in interactor[1]['refseq']:
+          current = refseq_lookup.get(alt_id)
+          if current is not None:
+            refseq_count += 1
+            break
+
+      if current is None:
+        for alt_id in interactor[1]['entrez gene/locuslink']:
+          current = name_lookup.get(alt_id)
+          if current is not None:
+            name_count += 1
+            break
 
       # If the protein failed to be mapped, note it
       if current is None:
@@ -375,24 +290,22 @@ def id_to_protein(protein_dict: dict[str, Protein], interactions: list[(str, lis
       remapped_interactions.add(tuple(remapped_interaction))
 
   # Debugging code for checking protein mapping source efficacy
-  # print(ncbi_count, ensembl_count, swissprot_count, trembl_count, refseq_count, name_count)
+  # print('Lookup counts: ', ncbi_count, ensembl_count, swissprot_count, trembl_count, refseq_count, name_count, count_none)
 
   # Sort all interactions alphabetically for output
   remapped_interactions = list(remapped_interactions)
   remapped_interactions.sort(key=lambda x: (x[0].gene_id.upper(), x[1].gene_id.upper()))
 
-  protein = remapped_interactions[0][0]
-  print(protein)
-  print(Protein.ProteinEncoder().encode(protein))
-
   # Count number of interactions processed (different from # interactions in final network) as some may be duplicates
   total_processed = count + count_invalid + non_phys + non_exp + self_loop + interspecies
 
   ## places output in a form that can be pasted into a spreadsheet ###
-  with open(f'../../networks/{species.short_name.replace(" ", "_").lower()}.network-{ensembl_version}-{biogrid_version}.txt', 'w') as f1, \
-    open(f'../../networks/SANA/{species.short_name.replace(" ", "_").lower()}.network-{ensembl_version}-{biogrid_version}.el', 'w') as f2:
+  with open(f'{utility.get_project_root()}/networks/{species.short_name.replace(" ", "_").lower()}.network-{ensembl_version}-{biogrid_version}.txt', 'w') as f1, \
+    open(f'{utility.get_project_root()}/networks/SANA/{species.short_name.replace(" ", "_").lower()}.network-{ensembl_version}-{biogrid_version}.el', 'w') as f2:
 
-    f1.write(f'! Generated using Ensembl {ensembl_version} and BioGRID {biogrid_version}\n')
+    import datetime
+
+    f1.write(f'! Generated using Ensembl {ensembl_version} and BioGRID {biogrid_version} on {datetime.datetime.now()}\n')
     f1.write("! Total interactions processed: " + str(total_processed) + "\n")
     f1.write(f'! {count} total interactions mapped successfully into {len(remapped_interactions)} unique interactions\n')
     f1.write("! non-physical interactions filtered out: " + str(non_phys) + "\n")
@@ -426,7 +339,7 @@ def id_to_protein(protein_dict: dict[str, Protein], interactions: list[(str, lis
   return remapped_interactions
 
 
-def retrieve_code() -> (set[str], set[str]):
+def retrieve_code() -> tuple[set[str], set[str]]:
   """
   Extracts data from physical and experimental interaction files
   and places them into two respective sets.
@@ -434,8 +347,8 @@ def retrieve_code() -> (set[str], set[str]):
   :return: 2 sets of strings, with MI codes for physical interactions and experimentally-detected interaction
   """
   # open both phys and exp files to read
-  physical_codes = open("physical_interaction_codes.txt", 'r')
-  experimental_codes = open("experimental_detected_codes.txt", 'r')
+  physical_codes = open(f'{utility.get_project_root()}/python/network/physical_interaction_codes.txt', 'r')
+  experimental_codes = open(f'{utility.get_project_root()}/python/network/experimental_detected_codes.txt', 'r')
 
   # sets (separate from files) where data from files will be stored
   physical_set = set()
@@ -503,9 +416,9 @@ if __name__ == '__main__':
   if len(unknown_args) == 1:
     main(unknown_args[0])
   else:
-    #for species in species_list:
-    #  print(species)
-    #  main(species.short_name)
+    # for species in Species.species_list:
+    #   print(species)
+    #   main(species.short_name)
     main()
 
 

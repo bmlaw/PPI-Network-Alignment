@@ -1,99 +1,88 @@
-! Generated using Ensembl 109 and BioGRID 4.4.222
+! Generated using Ensembl 109 and BioGRID 4.4.222 on 2023-07-05 17:27:40.195763
 ! Total interactions processed: 43310
-! 23802 total interactions mapped successfully into 20842 unique interactions
+! 23831 total interactions mapped successfully into 20867 unique interactions
 ! non-physical interactions filtered out: 18526
 ! non-experimental interactions filtered out: 10
 ! self-loops filtered out: 695
 ! interspecies interactions filtered out: 96
-! interactions mapped to invalid "proteins": 181
-! % interactions mapped to invalid "proteins": 0.418%
-! total interactions with unmappable IDs (including duplicates): 179
-! % IDs unmappable (including duplicates): 0.375%
-! total unmappable proteins (excluding duplicates): 75
-! total interactions with noncoding genes (including duplicates): 2
-! % IDs mapped to noncoding genes (including duplicates): 0.004%
-! total mapped noncoding proteins (excluding duplicates): 2
+! interactions mapped to invalid "proteins": 152
+! % interactions mapped to invalid "proteins": 0.351%
+! total interactions with unmappable IDs (including duplicates): 68
+! % IDs unmappable (including duplicates): 0.142%
+! total unmappable proteins (excluding duplicates): 37
+! total interactions with noncoding genes (including duplicates): 84
+! % IDs mapped to noncoding genes (including duplicates): 0.176%
+! total mapped noncoding proteins (excluding duplicates): 29
 !
 ! Non-coding genes:
+! WBGene00000755 occurs 1 times	0.002%
+! WBGene00004103 occurs 8 times	0.018%
+! WBGene00005371 occurs 1 times	0.002%
+! WBGene00006057 occurs 1 times	0.002%
+! WBGene00007165 occurs 1 times	0.002%
+! WBGene00007677 occurs 1 times	0.002%
+! WBGene00008038 occurs 1 times	0.002%
+! WBGene00008983 occurs 1 times	0.002%
 ! WBGene00010424 occurs 1 times	0.002%
+! WBGene00011721 occurs 1 times	0.002%
+! WBGene00012470 occurs 1 times	0.002%
+! WBGene00013134 occurs 39 times	0.09%
+! WBGene00015436 occurs 1 times	0.002%
+! WBGene00016224 occurs 1 times	0.002%
+! WBGene00016713 occurs 1 times	0.002%
+! WBGene00017933 occurs 1 times	0.002%
 ! WBGene00017941 occurs 1 times	0.002%
+! WBGene00018813 occurs 1 times	0.002%
+! WBGene00019095 occurs 1 times	0.002%
+! WBGene00019526 occurs 1 times	0.002%
+! WBGene00019672 occurs 3 times	0.007%
+! WBGene00020338 occurs 1 times	0.002%
+! WBGene00020364 occurs 1 times	0.002%
+! WBGene00020622 occurs 1 times	0.002%
+! WBGene00020632 occurs 1 times	0.002%
+! WBGene00022431 occurs 9 times	0.021%
+! WBGene00022561 occurs 1 times	0.002%
+! WBGene00022691 occurs 1 times	0.002%
+! WBGene00022853 occurs 1 times	0.002%
 !
 ! Non-existent proteins:
-! 190192 occurs 39 times 	0.09%
 ! 183874 occurs 14 times 	0.032%
-! 353487 occurs 9 times 	0.021%
-! 3565023 occurs 9 times 	0.021%
-! 182458 occurs 8 times 	0.018%
-! 179302 occurs 8 times 	0.018%
 ! 183618 occurs 7 times 	0.016%
 ! 176248 occurs 4 times 	0.009%
-! 184873 occurs 3 times 	0.007%
-! 187320 occurs 3 times 	0.007%
 ! 181447 occurs 3 times 	0.007%
 ! 181346 occurs 3 times 	0.007%
-! 177239 occurs 2 times 	0.005%
-! 182058 occurs 2 times 	0.005%
-! 259996 occurs 2 times 	0.005%
-! 173364 occurs 2 times 	0.005%
 ! 7040166 occurs 2 times 	0.005%
-! 182925 occurs 2 times 	0.005%
-! 182211 occurs 1 times 	0.002%
-! 191159 occurs 1 times 	0.002%
-! 184390 occurs 1 times 	0.002%
-! 181955 occurs 1 times 	0.002%
-! 172724 occurs 1 times 	0.002%
-! 183365 occurs 1 times 	0.002%
-! 183510 occurs 1 times 	0.002%
-! 173561 occurs 1 times 	0.002%
-! 184681 occurs 1 times 	0.002%
-! 181988 occurs 1 times 	0.002%
-! 188265 occurs 1 times 	0.002%
-! 188640 occurs 1 times 	0.002%
-! 190265 occurs 1 times 	0.002%
-! 185795 occurs 1 times 	0.002%
-! 190032 occurs 1 times 	0.002%
-! 178610 occurs 1 times 	0.002%
-! 191115 occurs 1 times 	0.002%
-! 184733 occurs 1 times 	0.002%
-! 185520 occurs 1 times 	0.002%
-! 187148 occurs 1 times 	0.002%
-! 181733 occurs 1 times 	0.002%
-! 186971 occurs 1 times 	0.002%
-! 266874 occurs 1 times 	0.002%
-! 185635 occurs 1 times 	0.002%
-! 186190 occurs 1 times 	0.002%
-! 185123 occurs 1 times 	0.002%
-! 188432 occurs 1 times 	0.002%
-! 189133 occurs 1 times 	0.002%
-! 182314 occurs 1 times 	0.002%
-! 180156 occurs 1 times 	0.002%
-! 188652 occurs 1 times 	0.002%
-! 183757 occurs 1 times 	0.002%
-! 184952 occurs 1 times 	0.002%
-! 3565447 occurs 1 times 	0.002%
-! 185943 occurs 1 times 	0.002%
-! 186237 occurs 1 times 	0.002%
+! 259996 occurs 2 times 	0.005%
+! 182058 occurs 2 times 	0.005%
+! 177239 occurs 2 times 	0.005%
+! 173364 occurs 2 times 	0.005%
 ! 3565900 occurs 1 times 	0.002%
-! 190191 occurs 1 times 	0.002%
 ! 3565350 occurs 1 times 	0.002%
-! 188290 occurs 1 times 	0.002%
-! 189458 occurs 1 times 	0.002%
+! 266874 occurs 1 times 	0.002%
+! 191159 occurs 1 times 	0.002%
 ! 190591 occurs 1 times 	0.002%
-! 183203 occurs 1 times 	0.002%
-! 178681 occurs 1 times 	0.002%
-! 13192684 occurs 1 times 	0.002%
+! 190265 occurs 1 times 	0.002%
+! 190191 occurs 1 times 	0.002%
+! 190032 occurs 1 times 	0.002%
 ! 189136 occurs 1 times 	0.002%
-! 187723 occurs 1 times 	0.002%
-! 175127 occurs 1 times 	0.002%
-! 182778 occurs 1 times 	0.002%
-! 175176 occurs 1 times 	0.002%
-! 2565702 occurs 1 times 	0.002%
-! 2565697 occurs 1 times 	0.002%
-! 13198805 occurs 1 times 	0.002%
-! 13191451 occurs 1 times 	0.002%
+! 189133 occurs 1 times 	0.002%
+! 188640 occurs 1 times 	0.002%
+! 186971 occurs 1 times 	0.002%
 ! 186574 occurs 1 times 	0.002%
-! 174149 occurs 1 times 	0.002%
+! 186190 occurs 1 times 	0.002%
+! 185943 occurs 1 times 	0.002%
+! 185795 occurs 1 times 	0.002%
+! 185635 occurs 1 times 	0.002%
+! 184952 occurs 1 times 	0.002%
+! 184681 occurs 1 times 	0.002%
+! 184390 occurs 1 times 	0.002%
+! 183757 occurs 1 times 	0.002%
+! 183203 occurs 1 times 	0.002%
+! 181988 occurs 1 times 	0.002%
+! 178610 occurs 1 times 	0.002%
 ! 176535 occurs 1 times 	0.002%
+! 175127 occurs 1 times 	0.002%
+! 13191451 occurs 1 times 	0.002%
 !
 WBGene00000031	WBGene00000024
 WBGene00000034	WBGene00000024
@@ -116,6 +105,7 @@ WBGene00000161	WBGene00000157
 WBGene00000181	WBGene00000105
 WBGene00000207	WBGene00000099
 WBGene00000214	WBGene00000105
+WBGene00000215	WBGene00000105
 WBGene00000216	WBGene00000105
 WBGene00000217	WBGene00000105
 WBGene00000218	WBGene00000105
@@ -152,6 +142,7 @@ WBGene00000417	WBGene00000064
 WBGene00000417	WBGene00000065
 WBGene00000417	WBGene00000066
 WBGene00000417	WBGene00000067
+WBGene00000417	WBGene00000215
 WBGene00000417	WBGene00000229
 WBGene00000417	WBGene00000379
 WBGene00000418	WBGene00000417
@@ -729,6 +720,7 @@ WBGene00001569	WBGene00000815
 WBGene00001569	WBGene00000816
 WBGene00001569	WBGene00000817
 WBGene00001569	WBGene00000818
+WBGene00001569	WBGene00000829
 WBGene00001569	WBGene00000830
 WBGene00001569	WBGene00000834
 WBGene00001569	WBGene00000835
@@ -1122,6 +1114,7 @@ WBGene00001831	WBGene00000066
 WBGene00001831	WBGene00000776
 WBGene00001831	WBGene00001427
 WBGene00001832	WBGene00001569
+WBGene00001834	WBGene00000215
 WBGene00001834	WBGene00000482
 WBGene00001834	WBGene00001006
 WBGene00001834	WBGene00001345
@@ -2321,6 +2314,7 @@ WBGene00003220	WBGene00000482
 WBGene00003220	WBGene00001569
 WBGene00003220	WBGene00002637
 WBGene00003221	WBGene00003220
+WBGene00003222	WBGene00000215
 WBGene00003222	WBGene00000567
 WBGene00003222	WBGene00000928
 WBGene00003222	WBGene00002071
@@ -3578,6 +3572,7 @@ WBGene00004034	WBGene00003918
 WBGene00004034	WBGene00003921
 WBGene00004036	WBGene00002335
 WBGene00004042	WBGene00000098
+WBGene00004042	WBGene00000215
 WBGene00004042	WBGene00000275
 WBGene00004042	WBGene00000788
 WBGene00004042	WBGene00001569
@@ -5898,6 +5893,7 @@ WBGene00006658	WBGene00000228
 WBGene00006669	WBGene00000781
 WBGene00006689	WBGene00003185
 WBGene00006697	WBGene00000105
+WBGene00006697	WBGene00000215
 WBGene00006697	WBGene00000915
 WBGene00006697	WBGene00001569
 WBGene00006697	WBGene00003196
@@ -7270,6 +7266,7 @@ WBGene00007192	WBGene00002980
 WBGene00007195	WBGene00001569
 WBGene00007196	WBGene00001569
 WBGene00007197	WBGene00003036
+WBGene00007201	WBGene00001569
 WBGene00007207	WBGene00001598
 WBGene00007217	WBGene00001569
 WBGene00007222	WBGene00003083
@@ -7818,6 +7815,7 @@ WBGene00008136	WBGene00003976
 WBGene00008136	WBGene00006755
 WBGene00008136	WBGene00006825
 WBGene00008136	WBGene00007047
+WBGene00008136	WBGene00007855
 WBGene00008142	WBGene00004479
 WBGene00008143	WBGene00001569
 WBGene00008149	WBGene00001569
@@ -9998,6 +9996,7 @@ WBGene00010941	WBGene00001768
 WBGene00010941	WBGene00010794
 WBGene00010942	WBGene00001569
 WBGene00010948	WBGene00004099
+WBGene00010965	WBGene00001569
 WBGene00010969	WBGene00003597
 WBGene00010973	WBGene00006583
 WBGene00010975	WBGene00001569
@@ -11399,6 +11398,7 @@ WBGene00012738	WBGene00001569
 WBGene00012741	WBGene00010713
 WBGene00012758	WBGene00004767
 WBGene00012759	WBGene00001598
+WBGene00012759	WBGene00006756
 WBGene00012765	WBGene00004336
 WBGene00012765	WBGene00004790
 WBGene00012765	WBGene00006520
@@ -13239,6 +13239,7 @@ WBGene00015518	WBGene00002981
 WBGene00015518	WBGene00004927
 WBGene00015518	WBGene00008402
 WBGene00015519	WBGene00000253
+WBGene00015520	WBGene00001224
 WBGene00015523	WBGene00000438
 WBGene00015523	WBGene00001182
 WBGene00015523	WBGene00001324
@@ -13621,6 +13622,7 @@ WBGene00016114	WBGene00003807
 WBGene00016114	WBGene00007635
 WBGene00016114	WBGene00016110
 WBGene00016118	WBGene00001569
+WBGene00016120	WBGene00000552
 WBGene00016120	WBGene00004858
 WBGene00016121	WBGene00000490
 WBGene00016124	WBGene00001005
@@ -14841,6 +14843,7 @@ WBGene00017716	WBGene00006820
 WBGene00017719	WBGene00004421
 WBGene00017719	WBGene00016892
 WBGene00017723	WBGene00009436
+WBGene00017727	WBGene00013382
 WBGene00017733	WBGene00001334
 WBGene00017733	WBGene00001569
 WBGene00017733	WBGene00001790
@@ -15297,6 +15300,7 @@ WBGene00018330	WBGene00000204
 WBGene00018330	WBGene00000206
 WBGene00018330	WBGene00000207
 WBGene00018330	WBGene00000214
+WBGene00018330	WBGene00000215
 WBGene00018330	WBGene00000216
 WBGene00018330	WBGene00000217
 WBGene00018330	WBGene00000218
@@ -16294,6 +16298,7 @@ WBGene00018330	WBGene00015866
 WBGene00018330	WBGene00015885
 WBGene00018330	WBGene00015943
 WBGene00018330	WBGene00015956
+WBGene00018330	WBGene00015968
 WBGene00018330	WBGene00015969
 WBGene00018330	WBGene00016006
 WBGene00018330	WBGene00016018
@@ -16476,17 +16481,23 @@ WBGene00018373	WBGene00001132
 WBGene00018373	WBGene00001330
 WBGene00018373	WBGene00001569
 WBGene00018373	WBGene00003622
+WBGene00018373	WBGene00004198
 WBGene00018373	WBGene00004507
+WBGene00018373	WBGene00005077
+WBGene00018373	WBGene00005078
 WBGene00018373	WBGene00006381
+WBGene00018373	WBGene00006410
 WBGene00018373	WBGene00007520
 WBGene00018373	WBGene00009314
 WBGene00018373	WBGene00010713
+WBGene00018373	WBGene00010898
 WBGene00018373	WBGene00010969
 WBGene00018373	WBGene00012558
 WBGene00018373	WBGene00012562
 WBGene00018373	WBGene00012891
 WBGene00018373	WBGene00014101
 WBGene00018373	WBGene00016381
+WBGene00018373	WBGene00018330
 WBGene00018374	WBGene00002035
 WBGene00018374	WBGene00003739
 WBGene00018374	WBGene00004364
@@ -17385,6 +17396,7 @@ WBGene00019530	WBGene00016534
 WBGene00019530	WBGene00017240
 WBGene00019530	WBGene00018145
 WBGene00019530	WBGene00018292
+WBGene00019531	WBGene00017727
 WBGene00019531	WBGene00018145
 WBGene00019531	WBGene00019120
 WBGene00019537	WBGene00001569
@@ -17630,6 +17642,7 @@ WBGene00019834	WBGene00016263
 WBGene00019834	WBGene00016724
 WBGene00019834	WBGene00017238
 WBGene00019834	WBGene00017305
+WBGene00019834	WBGene00017727
 WBGene00019834	WBGene00018467
 WBGene00019834	WBGene00018586
 WBGene00019834	WBGene00019124
@@ -20855,6 +20868,7 @@ WBGene00044989	WBGene00017904
 WBGene00044989	WBGene00017981
 WBGene00044989	WBGene00018330
 WBGene00044989	WBGene00018350
+WBGene00044989	WBGene00018373
 WBGene00044989	WBGene00018969
 WBGene00044989	WBGene00019124
 WBGene00044989	WBGene00019777

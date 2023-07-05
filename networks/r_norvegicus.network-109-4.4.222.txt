@@ -1,17 +1,17 @@
-! Generated using Ensembl 109 and BioGRID 4.4.222
+! Generated using Ensembl 109 and BioGRID 4.4.222 on 2023-07-05 17:27:40.986262
 ! Total interactions processed: 10159
-! 6213 total interactions mapped successfully into 5325 unique interactions
+! 6239 total interactions mapped successfully into 5343 unique interactions
 ! non-physical interactions filtered out: 173
 ! non-experimental interactions filtered out: 8
 ! self-loops filtered out: 87
 ! interspecies interactions filtered out: 3312
-! interactions mapped to invalid "proteins": 366
-! % interactions mapped to invalid "proteins": 3.603%
-! total interactions with unmappable IDs (including duplicates): 350
-! % IDs unmappable (including duplicates): 2.74%
-! total unmappable proteins (excluding duplicates): 81
+! interactions mapped to invalid "proteins": 340
+! % interactions mapped to invalid "proteins": 3.347%
+! total interactions with unmappable IDs (including duplicates): 323
+! % IDs unmappable (including duplicates): 2.523%
+! total unmappable proteins (excluding duplicates): 74
 ! total interactions with noncoding genes (including duplicates): 23
-! % IDs mapped to noncoding genes (including duplicates): 0.185%
+! % IDs mapped to noncoding genes (including duplicates): 0.184%
 ! total mapped noncoding proteins (excluding duplicates): 9
 !
 ! Non-coding genes:
@@ -27,86 +27,79 @@
 !
 ! Non-existent proteins:
 ! 499417 occurs 190 times 	1.87%
-! 24525 occurs 16 times 	0.157%
-! 305123 occurs 11 times 	0.108%
 ! 89823 occurs 11 times 	0.108%
+! 305123 occurs 11 times 	0.108%
 ! 24176 occurs 7 times 	0.069%
 ! 360573 occurs 5 times 	0.049%
 ! 78948 occurs 4 times 	0.039%
-! 24252 occurs 4 times 	0.039%
-! 307498 occurs 4 times 	0.039%
 ! 50685 occurs 4 times 	0.039%
-! 161475 occurs 3 times 	0.03%
-! 25301 occurs 3 times 	0.03%
+! 307498 occurs 4 times 	0.039%
+! 24252 occurs 4 times 	0.039%
 ! 362816 occurs 3 times 	0.03%
 ! 297755 occurs 3 times 	0.03%
 ! 295213 occurs 3 times 	0.03%
-! 688509 occurs 2 times 	0.02%
-! 171128 occurs 2 times 	0.02%
-! 114856 occurs 2 times 	0.02%
+! 161475 occurs 3 times 	0.03%
 ! 691496 occurs 2 times 	0.02%
-! 64356 occurs 2 times 	0.02%
+! 688509 occurs 2 times 	0.02%
 ! 445438 occurs 2 times 	0.02%
-! 293418 occurs 2 times 	0.02%
+! 360860 occurs 2 times 	0.02%
 ! 29748 occurs 2 times 	0.02%
 ! 296197 occurs 2 times 	0.02%
-! 360860 occurs 2 times 	0.02%
-! 29473 occurs 2 times 	0.02%
+! 293418 occurs 2 times 	0.02%
+! 114856 occurs 2 times 	0.02%
 ! 100363770 occurs 2 times 	0.02%
 ! 100361520 occurs 2 times 	0.02%
-! 290215 occurs 1 times 	0.01%
-! 315350 occurs 1 times 	0.01%
-! 499423 occurs 1 times 	0.01%
-! 297756 occurs 1 times 	0.01%
-! 500983 occurs 1 times 	0.01%
-! 300833 occurs 1 times 	0.01%
-! 684969 occurs 1 times 	0.01%
-! 29550 occurs 1 times 	0.01%
-! 117517 occurs 1 times 	0.01%
-! 364694 occurs 1 times 	0.01%
 ! 691974 occurs 1 times 	0.01%
+! 687994 occurs 1 times 	0.01%
 ! 687506 occurs 1 times 	0.01%
+! 685186 occurs 1 times 	0.01%
+! 684969 occurs 1 times 	0.01%
 ! 680063 occurs 1 times 	0.01%
-! 295274 occurs 1 times 	0.01%
-! 445271 occurs 1 times 	0.01%
-! 100360426 occurs 1 times 	0.01%
-! 64373 occurs 1 times 	0.01%
-! 364716 occurs 1 times 	0.01%
-! 315649 occurs 1 times 	0.01%
-! 24224 occurs 1 times 	0.01%
 ! 679910 occurs 1 times 	0.01%
+! 64672 occurs 1 times 	0.01%
+! 64373 occurs 1 times 	0.01%
 ! 503073 occurs 1 times 	0.01%
 ! 501206 occurs 1 times 	0.01%
-! 687994 occurs 1 times 	0.01%
-! 365662 occurs 1 times 	0.01%
-! 311033 occurs 1 times 	0.01%
-! 289641 occurs 1 times 	0.01%
-! 100910660 occurs 1 times 	0.01%
-! 498099 occurs 1 times 	0.01%
-! 301438 occurs 1 times 	0.01%
-! 366605 occurs 1 times 	0.01%
-! 360865 occurs 1 times 	0.01%
-! 310587 occurs 1 times 	0.01%
+! 500983 occurs 1 times 	0.01%
+! 499423 occurs 1 times 	0.01%
 ! 499382 occurs 1 times 	0.01%
-! 64672 occurs 1 times 	0.01%
-! 100361915 occurs 1 times 	0.01%
-! 27139 occurs 1 times 	0.01%
-! 64832 occurs 1 times 	0.01%
-! 103690190 occurs 1 times 	0.01%
-! 299357 occurs 1 times 	0.01%
-! 287624 occurs 1 times 	0.01%
-! 100360169 occurs 1 times 	0.01%
-! 100363345 occurs 1 times 	0.01%
-! 100359980 occurs 1 times 	0.01%
-! 294254 occurs 1 times 	0.01%
-! 685186 occurs 1 times 	0.01%
+! 498099 occurs 1 times 	0.01%
+! 445271 occurs 1 times 	0.01%
+! 406198 occurs 1 times 	0.01%
+! 366605 occurs 1 times 	0.01%
+! 365662 occurs 1 times 	0.01%
+! 364716 occurs 1 times 	0.01%
+! 364694 occurs 1 times 	0.01%
+! 363248 occurs 1 times 	0.01%
+! 360865 occurs 1 times 	0.01%
+! 315649 occurs 1 times 	0.01%
+! 315350 occurs 1 times 	0.01%
+! 311033 occurs 1 times 	0.01%
+! 310587 occurs 1 times 	0.01%
+! 301438 occurs 1 times 	0.01%
+! 300833 occurs 1 times 	0.01%
 ! 300303 occurs 1 times 	0.01%
 ! 300253 occurs 1 times 	0.01%
-! 363248 occurs 1 times 	0.01%
-! 690795 occurs 1 times 	0.01%
-! 24641 occurs 1 times 	0.01%
 ! 300069 occurs 1 times 	0.01%
-! 406198 occurs 1 times 	0.01%
+! 299357 occurs 1 times 	0.01%
+! 297756 occurs 1 times 	0.01%
+! 29550 occurs 1 times 	0.01%
+! 295274 occurs 1 times 	0.01%
+! 294254 occurs 1 times 	0.01%
+! 290215 occurs 1 times 	0.01%
+! 289641 occurs 1 times 	0.01%
+! 287624 occurs 1 times 	0.01%
+! 27139 occurs 1 times 	0.01%
+! 24641 occurs 1 times 	0.01%
+! 24224 occurs 1 times 	0.01%
+! 117517 occurs 1 times 	0.01%
+! 103690190 occurs 1 times 	0.01%
+! 100910660 occurs 1 times 	0.01%
+! 100363345 occurs 1 times 	0.01%
+! 100361915 occurs 1 times 	0.01%
+! 100360426 occurs 1 times 	0.01%
+! 100360169 occurs 1 times 	0.01%
+! 100359980 occurs 1 times 	0.01%
 !
 ENSRNOG00000000457	ENSRNOG00000000455
 ENSRNOG00000000805	ENSRNOG00000000204
@@ -810,6 +803,7 @@ ENSRNOG00000012207	ENSRNOG00000001129
 ENSRNOG00000012240	ENSRNOG00000001129
 ENSRNOG00000012247	ENSRNOG00000001142
 ENSRNOG00000012255	ENSRNOG00000001129
+ENSRNOG00000012290	ENSRNOG00000011039
 ENSRNOG00000012307	ENSRNOG00000000805
 ENSRNOG00000012346	ENSRNOG00000003442
 ENSRNOG00000012346	ENSRNOG00000005434
@@ -2591,6 +2585,9 @@ ENSRNOG00000021102	ENSRNOG00000006030
 ENSRNOG00000021103	ENSRNOG00000013281
 ENSRNOG00000021125	ENSRNOG00000000805
 ENSRNOG00000021125	ENSRNOG00000005133
+ENSRNOG00000021144	ENSRNOG00000010557
+ENSRNOG00000021144	ENSRNOG00000015708
+ENSRNOG00000021144	ENSRNOG00000016029
 ENSRNOG00000021147	ENSRNOG00000008656
 ENSRNOG00000021147	ENSRNOG00000010945
 ENSRNOG00000021147	ENSRNOG00000010957
@@ -3430,6 +3427,7 @@ ENSRNOG00000045816	ENSRNOG00000016271
 ENSRNOG00000045816	ENSRNOG00000025394
 ENSRNOG00000045816	ENSRNOG00000030019
 ENSRNOG00000045816	ENSRNOG00000038597
+ENSRNOG00000045819	ENSRNOG00000005133
 ENSRNOG00000045829	ENSRNOG00000006228
 ENSRNOG00000045829	ENSRNOG00000010944
 ENSRNOG00000045829	ENSRNOG00000018294
@@ -3764,6 +3762,7 @@ ENSRNOG00000053362	ENSRNOG00000019834
 ENSRNOG00000053405	ENSRNOG00000001849
 ENSRNOG00000053448	ENSRNOG00000010957
 ENSRNOG00000053448	ENSRNOG00000016137
+ENSRNOG00000053448	ENSRNOG00000037815
 ENSRNOG00000053450	ENSRNOG00000016271
 ENSRNOG00000053468	ENSRNOG00000000805
 ENSRNOG00000053468	ENSRNOG00000002373
@@ -4543,6 +4542,7 @@ ENSRNOG00000057823	ENSRNOG00000010550
 ENSRNOG00000057823	ENSRNOG00000010555
 ENSRNOG00000057823	ENSRNOG00000010649
 ENSRNOG00000057823	ENSRNOG00000010668
+ENSRNOG00000057823	ENSRNOG00000010688
 ENSRNOG00000057823	ENSRNOG00000010731
 ENSRNOG00000057823	ENSRNOG00000010756
 ENSRNOG00000057823	ENSRNOG00000010765
@@ -5402,6 +5402,17 @@ ENSRNOG00000069265	ENSRNOG00000054962
 ENSRNOG00000069286	ENSRNOG00000013281
 ENSRNOG00000069361	ENSRNOG00000008258
 ENSRNOG00000069361	ENSRNOG00000055524
+ENSRNOG00000069406	ENSRNOG00000005904
+ENSRNOG00000069406	ENSRNOG00000006469
+ENSRNOG00000069406	ENSRNOG00000010153
+ENSRNOG00000069406	ENSRNOG00000013281
+ENSRNOG00000069406	ENSRNOG00000014786
+ENSRNOG00000069406	ENSRNOG00000016271
+ENSRNOG00000069406	ENSRNOG00000025602
+ENSRNOG00000069406	ENSRNOG00000028415
+ENSRNOG00000069406	ENSRNOG00000057823
+ENSRNOG00000069406	ENSRNOG00000059059
+ENSRNOG00000069406	ENSRNOG00000062959
 ENSRNOG00000069581	ENSRNOG00000000805
 ENSRNOG00000069581	ENSRNOG00000001142
 ENSRNOG00000069581	ENSRNOG00000016271
