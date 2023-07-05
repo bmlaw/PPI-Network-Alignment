@@ -6,11 +6,12 @@ __author__ = "Anna Sheaffer"
 __email__ = "asheaffe@iwu.edu"
 __credits__ = ["Norman Luo", "Brian Law"]
 
-import json
+
 import os
 
 from python.classes.Species import Species, species_dict, species_list
 from python.classes import Protein
+
 
 
 def main(species_name=None, ensembl_version=None, biogrid_version=None):
@@ -274,12 +275,14 @@ def id_to_protein(protein_dict: dict[str, Protein], interactions: list[(str, lis
   # name_count = 0
 
   for interaction in interactions:
-    # keeps track of whether the interaction has been filtered or not
+    # Keeps track of whether the interaction has been filtered or not. Each interactor may flip this to True if
+    # mapping fails.
     failure = False
 
+    # After mapping to proteins, store new interaction in this list.
     remapped_interaction = []
 
-    # count filtered out interactions
+    # Count filtered out interactions.
     if len(interaction) == 1:
       if interaction[0] == 'phys':
         non_phys += 1
@@ -291,7 +294,7 @@ def id_to_protein(protein_dict: dict[str, Protein], interactions: list[(str, lis
         self_loop += 1
       continue
 
-    # process "real" interactions
+    # Process "real" interactions by trying to map each interactor
     for interactor in interaction:
 
       # Try to remap the BioGRID interactor to an Ensembl ID in current
@@ -300,6 +303,7 @@ def id_to_protein(protein_dict: dict[str, Protein], interactions: list[(str, lis
       # The BioGRID ID is stored as the first element of the interactor
       biogrid_id = interactor[0]
 
+      # First look-up is BioGRID's NCBI IDs
       if biogrid_id in ncbi_lookup:
         current = ncbi_lookup[biogrid_id]
         # ncbi_count += 1
@@ -334,26 +338,36 @@ def id_to_protein(protein_dict: dict[str, Protein], interactions: list[(str, lis
 
       # If the protein failed to be mapped, note it
       if current is None:
+        # If no protein exists, just use a string mapping instead.
         current = "! " + str(biogrid_id)
 
-        # increase count of current by 1 in tracking dictionary
+        # Increase count of current by 1 in tracking dictionary
         none_dict[current] = none_dict.get(current, 0) + 1
         count_none += 1
 
+        # Flag as an invalid interaction
         failure = True
+
+      # If the gene is a non-coding gene, it shouldn't be included in the final network. This is a possible problem
+      # with BioGRID data; we are assuming Ensembl is correctly identifying coding/non-coding genes using a protein
+      # id (or the absence of one)
       elif len(current.p_ids) == 0:
         noncoding_dict[current] = noncoding_dict.get(current, 0) + 1
         count_noncoding += 1
+
+        # Flag as an invalid interaction
         failure = True
 
+      # Add the current interactor, whether successful or failed, to the remapped interaction.
       remapped_interaction.append(current)
 
-    # only add unfiltered interactions
+    # Only add interactions where both interactors were successfully mapped to coding genes
     if failure:
       count_invalid += 1
       unmapped_interactions.add(tuple(remapped_interaction))
     else:
       count += 1
+
       # If protein #2 is alphabetically before protein #1, swap the two so they're alphabetically ordered.
       if remapped_interaction[0].gene_id < remapped_interaction[1].gene_id:
         remapped_interaction[0], remapped_interaction[1] = remapped_interaction[1], remapped_interaction[0]
@@ -363,17 +377,15 @@ def id_to_protein(protein_dict: dict[str, Protein], interactions: list[(str, lis
   # Debugging code for checking protein mapping source efficacy
   # print(ncbi_count, ensembl_count, swissprot_count, trembl_count, refseq_count, name_count)
 
+  # Sort all interactions alphabetically for output
   remapped_interactions = list(remapped_interactions)
   remapped_interactions.sort(key=lambda x: (x[0].gene_id.upper(), x[1].gene_id.upper()))
 
-  # for i in range(len(remapped_interactions) - 1):
-  #   if remapped_interactions[i][0].get_ncbi().upper() == remapped_interactions[i+1][0].get_ncbi().upper() and \
-  #      remapped_interactions[i][1].get_ncbi().upper() == remapped_interactions[i + 1][1].get_ncbi().upper() and \
-  #      remapped_interactions[i][0] != remapped_interactions[i+1][0] and remapped_interactions[i][1] != remapped_interactions[i+1][1]:
-  #     print(remapped_interactions[i])
-  #     print(remapped_interactions[i+1])
-  #     print('')
+  protein = remapped_interactions[0][0]
+  print(protein)
+  print(Protein.ProteinEncoder().encode(protein))
 
+  # Count number of interactions processed (different from # interactions in final network) as some may be duplicates
   total_processed = count + count_invalid + non_phys + non_exp + self_loop + interspecies
 
   ## places output in a form that can be pasted into a spreadsheet ###
@@ -401,47 +413,17 @@ def id_to_protein(protein_dict: dict[str, Protein], interactions: list[(str, lis
       f1.write(f'! {protein.gene_id} occurs {noncoding_dict[protein]} times\t{round((noncoding_dict[protein] / total_processed) * 100, 3)}%\n')
     f1.write("!\n")
     f1.write('! Non-existent proteins:\n')
-    for gene_id in sorted(none_dict, key=lambda x: none_dict[x], reverse=True):
+    for gene_id in sorted(none_dict, key=lambda x: (none_dict[x], x), reverse=True):
       f1.write(str(gene_id) + " occurs " + str(none_dict[gene_id]) + " times " + "\t" + str(
         round((none_dict[gene_id] / total_processed) * 100, 3)) + "%\n")
     f1.write("!\n")
 
+    # Write each interaction to file
     for interaction in remapped_interactions:
       f1.write(interaction[0].gene_id + '\t' + interaction[1].gene_id + '\n')
       f2.write(interaction[0].gene_id + '\t' + interaction[1].gene_id + '\n')
 
-
   return remapped_interactions
-
-
-def list_to_dict(map_list):
-  """
-    Constructs a dictionary with a list of each protein it interacts with
-    as def
-
-    :param map_list: list of mapped protein ids
-    :return: dict of each protein id and it's interactors
-    """
-
-  prot_hash = {}
-  for interaction in map_list:
-    current = 0
-    for prot in interaction:
-      # check if the protein already exists in the dictionary
-      if prot not in prot_hash:
-        prot_hash[prot] = []  # create a new list if not in dict
-
-      prot2 = interaction[current - 1]  # receive interacting protein (either 0 or -1)
-
-      # check if the interacting protein is already in the current def list
-      # and also not in the dict already so that there aren't duplicate interactions
-      if prot2 not in prot_hash[prot]:
-        # add the interacting protein to the list of interactors for the current
-        prot_hash[prot].append(interaction[current - 1])
-
-      current += 1
-
-  return prot_hash
 
 
 def retrieve_code() -> (set[str], set[str]):
@@ -521,10 +503,10 @@ if __name__ == '__main__':
   if len(unknown_args) == 1:
     main(unknown_args[0])
   else:
-    for species in species_list:
-      print(species)
-      main(species.short_name)
-    #main()
+    #for species in species_list:
+    #  print(species)
+    #  main(species.short_name)
+    main()
 
 
 # print(retrieve_code())

@@ -15,7 +15,7 @@ class Species:
 
 species_list = [Species('yeast', 'Saccharomyces cerevisiae S288c', 'S cerevisiae', 4932),
                 Species('worm', 'Caenorhabditis elegans', 'C elegans', 6239),
-                Species('zebrafish', 'Danio rerio', 'D rerio', 7955),
+                #Species('zebrafish', 'Danio rerio', 'D rerio', 7955),
                 Species('rat', 'Rattus norvegicus', 'R norvegicus', 10116),
                 Species('mouse', 'Mus musculus', 'M musculus', 10090),
                 Species('human', 'Homo sapiens', 'H sapiens', 9606)]

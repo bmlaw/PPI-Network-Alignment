@@ -2,6 +2,7 @@
 Class that maps all protein id's to one another
 """
 from __future__ import annotations
+from json import JSONEncoder
 
 class Protein:
 
@@ -81,6 +82,12 @@ class Protein:
 
   def __hash__(self) -> int:
     return hash(self.gene_id)
+
+# subclass JSONEncoder
+class ProteinEncoder(JSONEncoder):
+  def default(self, o):
+    return o.__dict__
+
 
   # d = {x.get_name(): x for x in list_of_mappings}
   # d['ITSN-1'].get_swissprot()
