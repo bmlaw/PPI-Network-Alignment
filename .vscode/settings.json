@@ -11,7 +11,11 @@
 		"terminal.integrated.env.windows": {
 			"PYTHONPATH": "${env:PYTHONPATH};${workspaceFolder}",
 		},
-		"python.envFile": "${workspaceFolder}/.env"
+		"python.envFile": "${workspaceFolder}/.env",
+		"python.linting.pylintEnabled": true,
+		"python.linting.enabled": true,
+		"python.linting.flake8Enabled": false,
+
 
 	
 }

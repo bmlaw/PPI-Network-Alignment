@@ -8,11 +8,13 @@ __credits__ = ["Norman Luo", "Brian Law"]
 
 
 import os
+import datetime
 
 from python.classes import Species
 from python.classes import Protein
 from python.classes import Network
 import python.utility as utility
+import python.network.interaction_codes as interaction_codes
 
 
 def main(species_name=None, ensembl_version=None, biogrid_version=None):
@@ -49,18 +51,16 @@ def main(species_name=None, ensembl_version=None, biogrid_version=None):
 
     biogrid_version = '.'.join(map(str, max(file_versions, key=lambda x: (x[0], x[1], x[2]))))
 
-  ensembl_filepath_others = f'{utility.get_project_root()}/ensembl/{species.short_name.replace(" ", "_").lower()}_ensembl_others-{ensembl_version}.txt'
-  ensembl_filepath_ncbi = f'{utility.get_project_root()}/ensembl/{species.short_name.replace(" ", "_").lower()}_ensembl_ncbi-{ensembl_version}.txt'
   biomart_filepath = f'{utility.get_project_root()}/biogrid/BIOGRID-ORGANISM-{species.long_name.replace(" ", "_")}-{biogrid_version}.mitab.txt'
 
   # initialize a dictionary of Proteins, with key as their Ensembl gene IDs for easy lookup
   protein_dict = utility.get_ensembl_data(species_name, ensembl_version)
 
-  # receive the physical and experimental codes
-  good_codes = retrieve_code()
+  # get the physical and experimental MI codes
+  good_codes = (interaction_codes.get_experimental_codes(), interaction_codes.get_physical_codes)
 
   # read the BioGRID file
-  with open(biomart_filepath, 'r') as f:
+  with open(biomart_filepath, 'r', encoding='UTF-8') as f:
     # build a list of interactions
     inter_list1 = []
 
@@ -107,9 +107,6 @@ def extract_name(filepath):
   species = species.lower()
 
   return species
-
-
-
 
 
 def id_to_protein(protein_dict: dict[str, Protein.Protein], 
@@ -210,7 +207,7 @@ def id_to_protein(protein_dict: dict[str, Protein.Protein],
       if biogrid_id in ncbi_lookup:
         current = ncbi_lookup[biogrid_id]
         ncbi_count += 1
-      
+
       # If the current protein's NCBI ID from BioGRID does not match one in Ensembl, try matching its other IDs
       if current is None:
         for alt_id in interactor[1]['entrez gene/locuslink']:
@@ -222,7 +219,7 @@ def id_to_protein(protein_dict: dict[str, Protein.Protein],
       # if current is None:
       #   for alt_id in interactor[1]['entrez gene/locuslink']:
       #     current = ensembl_lookup.get(alt_id.replace('CELE_', ''))
-      
+
       if current is None and 'uniprot/swiss-prot' in interactor[1]:
         for alt_id in interactor[1]['uniprot/swiss-prot']:
           current = swissprot_lookup.get(alt_id)
@@ -300,10 +297,8 @@ def id_to_protein(protein_dict: dict[str, Protein.Protein],
   total_processed = count + count_invalid + non_phys + non_exp + self_loop + interspecies
 
   ## places output in a form that can be pasted into a spreadsheet ###
-  with open(f'{utility.get_project_root()}/networks/{species.short_name.replace(" ", "_").lower()}.network-{ensembl_version}-{biogrid_version}.txt', 'w') as f1, \
-    open(f'{utility.get_project_root()}/networks/SANA/{species.short_name.replace(" ", "_").lower()}.network-{ensembl_version}-{biogrid_version}.el', 'w') as f2:
-
-    import datetime
+  with open(f'{utility.get_project_root()}/networks/{species.short_name.replace(" ", "_").lower()}.network-{ensembl_version}-{biogrid_version}.txt', 'w', encoding='UTF-8') as f1, \
+          open(f'{utility.get_project_root()}/networks/SANA/{species.short_name.replace(" ", "_").lower()}.network-{ensembl_version}-{biogrid_version}.el', 'w', encoding='UTF-8') as f2:
 
     f1.write(f'! Generated using Ensembl {ensembl_version} and BioGRID {biogrid_version} on {datetime.datetime.now()}\n')
     f1.write("! Total interactions processed: " + str(total_processed) + "\n")
@@ -339,36 +334,6 @@ def id_to_protein(protein_dict: dict[str, Protein.Protein],
   return remapped_interactions
 
 
-def retrieve_code() -> tuple[set[str], set[str]]:
-  """
-  Extracts data from physical and experimental interaction files
-  and places them into two respective sets.
-
-  :return: 2 sets of strings, with MI codes for physical interactions and experimentally-detected interaction
-  """
-  # open both phys and exp files to read
-  physical_codes = open(f'{utility.get_project_root()}/python/network/physical_interaction_codes.txt', 'r')
-  experimental_codes = open(f'{utility.get_project_root()}/python/network/experimental_detected_codes.txt', 'r')
-
-  # sets (separate from files) where data from files will be stored
-  physical_set = set()
-  experimental_set = set()
-
-  # add all the physical codes to the physical code set
-  for line in physical_codes:
-    code = line.split(':')[1].strip()
-    physical_set.add(code)
-
-  # add all the experimental codes to the experimental code set
-  for line in experimental_codes:
-    code = line.split(':')[1].strip()
-    experimental_set.add(code)
-
-  physical_codes.close()
-  experimental_codes.close()
-
-  # return the data from each set
-  return physical_set, experimental_set
 
 
 '''

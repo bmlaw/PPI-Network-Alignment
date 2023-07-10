@@ -5,20 +5,21 @@ import os
 
 from python.classes.Species import Species, species_dict, species_list
 from python.classes import Protein
+import python.network.interaction_codes as interaction_codes
 import python.utility as utility
+import networkx
 
 class Network:
 
   def __init__(self, species_name=None, ensembl_version=None, biogrid_version=None):
-    self.forward = {}
-    self.backward = {}
-    self.nodes = []
+    self.graph = networkx.Graph()
 
     if species_name is None:
       return
 
     species = utility.get_species(species_name)
 
+    # initialize a dictionary of Proteins, with key as their Ensembl gene IDs for easy lookup
     protein_dict = utility.get_ensembl_data(species.name, ensembl_version)
 
     if biogrid_version is None:
@@ -28,10 +29,12 @@ class Network:
       file_versions = [tuple([int(x) for x in version.split('.')]) for version in file_versions]
 
       biogrid_version = '.'.join(map(str, max(file_versions, key=lambda x: (x[0], x[1], x[2]))))
+    network_filepath = f'{utility.get_project_root()}/networks/{species.short_name.replace(" ", "_").lower()}-{ensembl_version}-{biogrid_version}.txt'
 
-    ensembl_filepath_others = f'{utility.get_project_root()}/ensembl/{species.short_name.replace(" ", "_").lower()}_ensembl_others-{ensembl_version}.txt'
-    ensembl_filepath_ncbi = f'{utility.get_project_root()}/ensembl/{species.short_name.replace(" ", "_").lower()}_ensembl_ncbi-{ensembl_version}.txt'
-    network_filepath = f'{utility.get_project_root()}/networks/{species.short_name.lower().replace(" ", "_")}-{ensembl_version}-{biogrid_version}.txt'
+    # get the physical and experimental MI codes
+    good_codes = (interaction_codes.get_experimental_codes(),
+                  interaction_codes.get_physical_codes)
+
 
     with open(network_filepath) as f:
       # build a list of interactions
@@ -46,8 +49,7 @@ class Network:
 
         interaction = get_gene_ids(line, good_codes)
 
-        if interaction:
-          interaction_list.append(interaction)
+        interaction_list.append(interaction)
 
 
 def get_gene_ids(line, good_codes) -> tuple[tuple[str, dict[str: list[str]]], tuple[str, dict[str: list[str]]]]:
@@ -87,12 +89,12 @@ def get_gene_ids(line, good_codes) -> tuple[tuple[str, dict[str: list[str]]], tu
     return 'intersp',
 
   # direct PPI physical interactions only
-  interaction_type = by_tab[11].split(':')[2][0:4]
+  interaction_type = by_tab[11].split('"')[1]
   if interaction_type not in phys_codes:
     return 'phys',
 
   # experimentally detected interactions only
-  interaction_detection = by_tab[6].split(':')[2][0:4]
+  interaction_detection = by_tab[6].split('"')[1]
   if interaction_detection not in exp_codes:
     return 'exp',
 
@@ -125,7 +127,7 @@ def build_id_list(line: str) -> dict[str, list[str]]:
 
   for id_type in id_text_split:
     id_type = id_type.split(':')
-    id_dict.setdefault(id_type[0], list())
+    id_dict.setdefault(id_type[0], [])
     id_dict[id_type[0]].append(id_type[1])
 
   return id_dict

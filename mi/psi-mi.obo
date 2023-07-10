@@ -32,10 +32,10 @@ remark: publisher: This file is published by the PSI MI working group see http:/
 remark: short labels are reported as PSI-MI-short synonyms that are created when a term is more than 20 characteres long.
 remark: The correct use of these vocabularies in the PSI Molecular Interaction XML schema is
 remark: The last accession number used in this file is stored in a separate file,
-remark: The maintenance of this file is ensured by Pablo Porras Millán pporras@ebi.ac.uk and Sandra Orchard orchard@ebi.ac.uk
+remark: The maintenance of this file is ensured by Luana Licata luana.licata@uniroma2.it and Sandra Orchard orchard@ebi.ac.uk
 remark: The PSI MI schema defines short labels for controlled vocabulary terms
 ontology: mi
-owl-axioms: Prefix(owl:=<http://www.w3.org/2002/07/owl#>)\nPrefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)\nPrefix(xml:=<http://www.w3.org/XML/1998/namespace>)\nPrefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)\nPrefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)\n\n\nOntology(\nDeclaration(AnnotationProperty(<http://purl.obolibrary.org/obo/IAO_0000115>))\nDeclaration(AnnotationProperty(<http://www.geneontology.org/formats/oboInOwl#created_by>))\nDeclaration(AnnotationProperty(<http://www.geneontology.org/formats/oboInOwl#creation_date>))\nDeclaration(AnnotationProperty(<http://www.geneontology.org/formats/oboInOwl#hasDbXref>))\nDeclaration(AnnotationProperty(<http://www.geneontology.org/formats/oboInOwl#hasOBONamespace>))\nDeclaration(AnnotationProperty(<http://www.geneontology.org/formats/oboInOwl#id>))\nDeclaration(AnnotationProperty(<http://www.geneontology.org/formats/oboInOwl#inSubset>))\n\n\nAnnotationAssertion(Annotation(<http://www.geneontology.org/formats/oboInOwl#hasDbXref> \"PMID:15833125\"^^xsd:string) <http://purl.obolibrary.org/obo/IAO_0000115> <http://purl.obolibrary.org/obo/MI_1285> \"OBSOLETE: An effect in which individual perturbations of two different genes result in opposite mutant phenotypes (traits measured on the same scale but each on opposing sides relative to the wild type phenotype), and the resulting phenotype of their combination is equal to that of only one of the perturbations. With respect to any single quantifiable phenotype, this may be expressed as an inequality as:\n(a < wt < b) AND (ab = a OR ab = b) \nwhere 'a' and 'b' are the observed phenotype values of the individual perturbations, 'ab' is the observed phenotype value of the double perturbation, and 'wt' is the wild type phenotype value.\"^^xsd:string)\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#created_by> <http://purl.obolibrary.org/obo/MI_1285> \"orchard\"^^xsd:string)\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#creation_date> <http://purl.obolibrary.org/obo/MI_1285> \"2013-06-05T20:51:51Z\"^^xsd:string)\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#hasOBONamespace> <http://purl.obolibrary.org/obo/MI_1285> \"PSI-MI\"^^xsd:string)\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#id> <http://purl.obolibrary.org/obo/MI_1285> \"MI:1285\"^^xsd:string)\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#inSubset> <http://purl.obolibrary.org/obo/MI_1285> <http://purl.obolibrary.org/obo/mi#PSI-MI_slim>)\nAnnotationAssertion(rdfs:comment <http://purl.obolibrary.org/obo/MI_1285> \"Term replaced by\nhttp://purl.obolibrary.org/obo/MI_1276\"^^xsd:string)\nAnnotationAssertion(rdfs:label <http://purl.obolibrary.org/obo/MI_1285> \"obsolete opposing epistasis\"^^xsd:string)\n)
+owl-axioms: Prefix(owl:=<http://www.w3.org/2002/07/owl#>)\nPrefix(rdf:=<http://www.w3.org/1999/02/22-rdf-syntax-ns#>)\nPrefix(xml:=<http://www.w3.org/XML/1998/namespace>)\nPrefix(xsd:=<http://www.w3.org/2001/XMLSchema#>)\nPrefix(rdfs:=<http://www.w3.org/2000/01/rdf-schema#>)\n\n\nOntology(\nDeclaration(Class(<http://purl.obolibrary.org/obo/MI_0907>))\nDeclaration(Class(<http://purl.obolibrary.org/obo/MI_0908>))\nDeclaration(Class(<http://purl.obolibrary.org/obo/MI_0909>))\nDeclaration(AnnotationProperty(<http://purl.obolibrary.org/obo/IAO_0000115>))\nDeclaration(AnnotationProperty(<http://www.geneontology.org/formats/oboInOwl#created_by>))\nDeclaration(AnnotationProperty(<http://www.geneontology.org/formats/oboInOwl#creation_date>))\nDeclaration(AnnotationProperty(<http://www.geneontology.org/formats/oboInOwl#hasDbXref>))\nDeclaration(AnnotationProperty(<http://www.geneontology.org/formats/oboInOwl#hasOBONamespace>))\nDeclaration(AnnotationProperty(<http://www.geneontology.org/formats/oboInOwl#id>))\nDeclaration(AnnotationProperty(<http://www.geneontology.org/formats/oboInOwl#inSubset>))\n\n\n############################\n#   Classes\n############################\n\n# Class: <http://purl.obolibrary.org/obo/MI_0907> (<http://purl.obolibrary.org/obo/MI_0907>)\n\nSubClassOf(<http://purl.obolibrary.org/obo/MI_0907> ObjectUnionOf(<http://purl.obolibrary.org/obo/MI_0908> <http://purl.obolibrary.org/obo/MI_0909>))\n\n\nAnnotationAssertion(Annotation(<http://www.geneontology.org/formats/oboInOwl#hasDbXref> \"PMID:15833125\"^^xsd:string) <http://purl.obolibrary.org/obo/IAO_0000115> <http://purl.obolibrary.org/obo/MI_1285> \"OBSOLETE: An effect in which individual perturbations of two different genes result in opposite mutant phenotypes (traits measured on the same scale but each on opposing sides relative to the wild type phenotype), and the resulting phenotype of their combination is equal to that of only one of the perturbations. With respect to any single quantifiable phenotype, this may be expressed as an inequality as:\n(a < wt < b) AND (ab = a OR ab = b) \nwhere 'a' and 'b' are the observed phenotype values of the individual perturbations, 'ab' is the observed phenotype value of the double perturbation, and 'wt' is the wild type phenotype value.\"^^xsd:string)\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#created_by> <http://purl.obolibrary.org/obo/MI_1285> \"orchard\"^^xsd:string)\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#creation_date> <http://purl.obolibrary.org/obo/MI_1285> \"2013-06-05T20:51:51Z\"^^xsd:string)\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#hasOBONamespace> <http://purl.obolibrary.org/obo/MI_1285> \"PSI-MI\"^^xsd:string)\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#id> <http://purl.obolibrary.org/obo/MI_1285> \"MI:1285\"^^xsd:string)\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#inSubset> <http://purl.obolibrary.org/obo/MI_1285> <http://purl.obolibrary.org/obo/mi#PSI-MI_slim>)\nAnnotationAssertion(rdfs:comment <http://purl.obolibrary.org/obo/MI_1285> \"Term replaced by\nhttp://purl.obolibrary.org/obo/MI_1276\"^^xsd:string)\nAnnotationAssertion(rdfs:label <http://purl.obolibrary.org/obo/MI_1285> \"obsolete opposing epistasis\"^^xsd:string)\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#id> <http://purl.obolibrary.org/obo/mi#MI_2414> \"MI:2414\"^^xsd:string)\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#id> <http://purl.obolibrary.org/obo/mi#MI_2416> \"MI:2416\"^^xsd:string)\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#id> <http://purl.obolibrary.org/obo/mi#MI_2417> \"MI:2417\"^^xsd:string)\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#id> <http://purl.obolibrary.org/obo/mi#MI_2418> \"MI:2418\"^^xsd:string)\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#id> <http://purl.obolibrary.org/obo/mi#MI_2419> \"MI:2419\"^^xsd:string)\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#id> <http://purl.obolibrary.org/obo/mi#MI_2420> \"MI:2420\"^^xsd:string)\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#id> <http://purl.obolibrary.org/obo/mi#MI_2421> \"MI:2421\"^^xsd:string)\nAnnotationAssertion(<http://www.geneontology.org/formats/oboInOwl#id> <http://purl.obolibrary.org/obo/mi#MI_2422> \"MI:2422\"^^xsd:string)\n)
 
 [Term]
 id: MI:0000
@@ -971,7 +971,7 @@ synonym: "membrane yeast two-hybrid" RELATED []
 synonym: "myth" RELATED []
 synonym: "split-ubiquitin" RELATED []
 synonym: "ub reconstruction" EXACT PSI-MI-short []
-is_a: MI:1320 ! membrane yeast two hybrid
+is_a: MI_2412 ! membrane two hybrid
 
 [Term]
 id: MI:0113
@@ -1055,8 +1055,8 @@ def: "Residue modification.\nOBSOLETE remap to MOD:00050." [PMID:11125103, RESID
 synonym: "(S)-2-(acetylamino)propanoic acid" EXACT PSI-MI-alternate []
 synonym: "[A:ac]" EXACT PSI-MI-alternate []
 synonym: "AAC" EXACT PSI-MI-alternate []
-synonym: "acetylalanine" EXACT PSI-MI-alternate []
 synonym: "acetylalanine" EXACT PSI-MI-short []
+synonym: "acetylalanine" EXACT PSI-MI-alternate []
 synonym: "N-acetyl-L-alanine" EXACT PSI-MI-alternate []
 is_obsolete: true
 
@@ -1230,8 +1230,8 @@ name: n-acetyl-proline
 def: "Residue modification.\nOBSOLETE remap to MOD:00059." [PMID:11125103, RESID:AA0050]
 synonym: "(2S)-1-acetyl-2-pyrrolidinecarboxylic acid" EXACT PSI-MI-alternate []
 synonym: "[P:ac]" EXACT PSI-MI-alternate []
-synonym: "acetylproline" EXACT PSI-MI-alternate []
 synonym: "acetylproline" EXACT PSI-MI-short []
+synonym: "acetylproline" EXACT PSI-MI-alternate []
 synonym: "N-acetyl-L-proline" EXACT PSI-MI-alternate []
 synonym: "PAC" EXACT PSI-MI-alternate []
 is_obsolete: true
@@ -3589,7 +3589,7 @@ is_obsolete: true
 [Term]
 id: MI:0444
 name: database citation
-def: "Database citation list names of databases commonly used to cross reference interaction data." [PMID:14755292]
+def: "Database citation list names of databases commonly used to cross reference interaction data. http://purl.obolibrary.org/obo/clo.owl" [PMID:14755292]
 subset: Drugable
 subset: PSI-MI_slim
 is_a: MI:0000 ! molecular interaction
@@ -11082,7 +11082,7 @@ name: membrane yeast two hybrid
 def: "Traditional yeast two hybrid assays are not suitable for the analysis of membrane proteins, as they require the interactions to occur in the nucleus. Methods have been specifically developed to assay for interactions of membrane proteins with both cytosolic or membrane-bound partners." [PMID:2261051]
 subset: PSI-MI_slim
 synonym: "MYTH" EXACT []
-is_a: MI:0232 ! transcriptional complementation assay
+is_a: MI_2412 ! membrane two hybrid
 created_by: orchard
 creation_date: 2014-01-08T10:14:46Z
 
@@ -11093,7 +11093,7 @@ def: "Upon interaction of N-terminal generated Ire1p-fusions, the Ire1p kinase d
 subset: PSI-MI_slim
 synonym: "endoplasmic reticulum membrane yeast-two hybrid" RELATED []
 synonym: "ER-MYTH" RELATED []
-is_a: MI:1320 ! membrane yeast two hybrid
+is_a: MI_2412 ! membrane two hybrid
 created_by: orchard
 creation_date: 2014-01-08T10:17:38Z
 
@@ -14773,8 +14773,8 @@ id: MI:2404
 name: oxidase assay
 def: "Enzymatic oxido-reductions where only O2 is an acceptor of hydrogen or electrons" [PMID:31273118]
 subset: PSI-MI_slim
-synonym: "oxidase" EXACT PSI-MI-short []
 synonym: "oxidase" EXACT PSI-MI-alternate []
+synonym: "oxidase" EXACT PSI-MI-short []
 is_a: MI:0979 ! oxidoreductase assay
 created_by: Licata
 creation_date: 2021-07-05T23:48:40Z
@@ -14849,3 +14849,120 @@ synonym: "mac-tag" EXACT PSI-MI-alternate []
 is_a: MI:0507 ! tag
 created_by: Licata
 creation_date: 2022-07-28T16:04:45Z
+
+[Term]
+id: MI_2412
+name: membrane two hybrid
+def: "Protein complementation methods specifically developed to assay for interactions of membrane proteins with both cytosolic or membrane-bound partners." [PMID:24658140]
+subset: PSI-MI_slim
+synonym: "MTH" EXACT [] {EXACT="PSI-MI-short"}
+is_a: MI:0232 ! transcriptional complementation assay
+created_by: Licata
+creation_date: 2022-02-03T16:27:45Z
+
+[Term]
+id: MI_2413
+name: mammalian membrane two hybrid
+def: "A membrane bait protein is tagged with the C-terminal half of ubiquitin (Cub) and a chimeric transcription factor, and a cytosolic or membrane-bound prey is tagged with the N-terminal half of ubiquitin (Nub). Upon interaction of bait and prey, the split halves form pseudoubiquitin, which is recognized by cytosolic deubiquitinating enzymes, resulting in cleavage of the transcription factor and expression of a reporter gene." [PMID:24658140]
+subset: PSI-MI_slim
+synonym: "MAMTH" EXACT PSI-MI-short []
+is_a: MI:0112 ! ubiquitin reconstruction
+created_by: Licata
+creation_date: 2023-02-03T10:18:35Z
+
+[Term]
+id: MI_2414
+name: Cellosaurus
+def: "The Cellosaurus is a knowledge resource on cell lines. It aims to describe all cell lines used in biomedical research." [PMID:29805321]
+subset: PSI-MI_slim
+synonym: "cellosaurus" EXACT PSI-MI-short []
+is_a: MI:0473 ! participant database
+created_by: Licata
+creation_date: 2023-02-04T11:18:35Z
+
+[Term]
+id: MI_2415
+name: cell line ontology
+def: "The Cell Line Ontology (CLO) is a community-based ontology of cell lines. The CLO is developed to unify publicly available cell line entry data from multiple sources to a standardized logically defined format based on consensus design patterns." [PMID:25852852]
+subset: PSI-MI_slim
+synonym: "Cell Line Ontology" EXACT PSI-MI-short []
+synonym: "CLO" EXACT PSI-MI-alternate []
+is_a: MI:0473 ! participant database
+created_by: Licata
+creation_date: 2023-02-04T11:50:35Z
+
+[Term]
+id: MI_2416
+name: ensemblbacteria
+def: "Ensembl Bacteria is a browser for bacterial and archaeal genomes.\nhttps://bacteria.ensembl.org/" [PMID:34791415]
+subset: PSI-MI_slim
+synonym: "Ensembl Bacteria" EXACT PSI-MI-alternate []
+synonym: "ensembl bacteria" EXACT PSI-MI-short []
+is_a: MI:1013 ! ensemblgenomes
+created_by: Licata
+creation_date: 2023-02-04T12:00:05Z
+
+[Term]
+id: MI_2417
+name: ensemblfungi
+def: "Ensembl Fungi is a browser for fungal genomes. https://fungi.ensembl.org/" [PMID:34791415]
+subset: PSI-MI_slim
+synonym: "Ensembl Fungi" EXACT PSI-MI-short []
+synonym: "ensembl fungi" EXACT PSI-MI-alternate []
+is_a: MI:1013 ! ensemblgenomes
+created_by: Licata
+creation_date: 2023-02-04T12:10:25Z
+
+[Term]
+id: MI_2418
+name: ensemblmetazoa
+def: "Ensembl Metazoa is a is a browser for genomes of metazoan species of scientific interest. https://metazoa.ensembl.org/" [PMID:34791415]
+subset: PSI-MI_slim
+synonym: "Ensembl Metazoa" EXACT PSI-MI-short []
+synonym: "ensembl metazoa" EXACT PSI-MI-alternate []
+is_a: MI:1013 ! ensemblgenomes
+created_by: Licata
+creation_date: 2023-02-04T12:20:05Z
+
+[Term]
+id: MI_2419
+name: ensemblplants
+def: "Ensembl Plants is a browser for plant genomes. \nhttps://plants.ensembl.org/" [PMID:27987162]
+subset: PSI-MI_slim
+synonym: "Ensembl Plants" EXACT PSI-MI-short []
+synonym: "ensembl plants" EXACT PSI-MI-alternate []
+is_a: MI:1013 ! ensemblgenomes
+created_by: Licata
+creation_date: 2023-02-04T12:33:15Z
+
+[Term]
+id: MI_2420
+name: ensemblprotists
+def: "Ensembl Protists is a browser for protist genomes. https://protists.ensembl.org/" [PMID:34791415]
+subset: PSI-MI_slim
+synonym: "Ensembl Protists" EXACT PSI-MI-short []
+synonym: "ensembl protists" EXACT PSI-MI-alternate []
+is_a: MI:1013 ! ensemblgenomes
+created_by: Licata
+creation_date: 2023-02-04T12:40:07Z
+
+[Term]
+id: MI_2421
+name: subtilist
+def: "SubtiList is the reference database dedicated to the genome of Bacillus subtilis, the paradigm of Gram-positive endospore-forming bacteria.\nhttp://genolist.pasteur.fr/SubtiList/" [PMID:11752255]
+subset: PSI-MI_slim
+synonym: "Subtilist" EXACT PSI-MI-short []
+is_a: MI:1094 ! genome databases
+created_by: Licata
+creation_date: 2023-02-04T08:09:20Z
+
+[Term]
+id: MI_2422
+name: Mass photometry
+def: "Mass photometry measures mass at the single molecule level in solution and enables the quantification of protein–protein interactions in solution with sufficient sensitivity to accurately determine stoichiometry and rate of reactions." [PMID:32167227]
+subset: PSI-MI_slim
+synonym: "mass photometry" EXACT PSI-MI-short []
+is_a: MI:0067 ! light scattering
+created_by: Licata
+creation_date: 2023-07-03T15:55:10Z
+

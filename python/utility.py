@@ -3,26 +3,37 @@ __email__ = "blaw@iwu.edu"
 
 import os
 
+from pathlib import Path
 from python.classes.Species import Species, species_dict, species_list
 from python.classes import Protein
-from python import utility
-from pathlib import Path
 
 g_ensembl_data = {}
 
+
 def get_project_root() -> Path:
+  """ Function to return a filepath to the project root. This function exists to simplify issues with different IDEs and
+  / or command-line usage of these Python files, which may be stored in different subdirectory (levels).
+
+  :return: A filepath to the project's root directory.
+  """
   return Path(__file__).parent.parent
 
 
 def get_species(species_name: str) -> Species:
+  """ Global getter method to get the Species object for a species name, in colloquial or scientific format. Mostly for
+  convenient translation from one name-type to another.
+
+  :param species_name: the name of the species
+  :return: the global Species object for that species, should be treated as immutable
+  """
   try:
     species = species_dict[species_name]
-  except KeyError as ke:
+  except KeyError:
     try:
-      species_name = species.name.capitalize()
+      species_name = species_name.capitalize()
       species = species_dict[species_name]
-    except KeyError as ke:
-      species_name = species.name.replace('.', '').replace('_', '')
+    except KeyError:
+      species_name = species_name.replace('.', '').replace('_', '')
       species = species_dict[species_name]
 
   return species
@@ -51,7 +62,8 @@ def read_ensembl_data(species_name: str, ensembl_version: str) -> dict[str, Prot
 
   Accesses Ensembl files in the ensembl subdirectory.
 
-  :param species_name: the name of the species to load Ensembl data from. Can be colloquial (human) or scientific (homo sapiens).
+  :param species_name: the name of the species to load Ensembl data from. Can be colloquial (human) or scientific (homo 
+                       sapiens).
   :param ensembl_version:
   :return:
   """
@@ -59,14 +71,14 @@ def read_ensembl_data(species_name: str, ensembl_version: str) -> dict[str, Prot
   # Fetch species based on provided species name
   species = get_species(species_name)
 
-  ensembl_filepath_others = f'{utility.get_project_root()}/ensembl/{species.short_name.replace(" ", "_").lower()}_ensembl_others-{ensembl_version}.txt'
-  ensembl_filepath_ncbi = f'{utility.get_project_root()}/ensembl/{species.short_name.replace(" ", "_").lower()}_ensembl_ncbi-{ensembl_version}.txt'
+  ensembl_filepath_others = f'{get_project_root()}/ensembl/{species.short_name.replace(" ", "_").lower()}_ensembl_others-{ensembl_version}.txt'
+  ensembl_filepath_ncbi = f'{get_project_root()}/ensembl/{species.short_name.replace(" ", "_").lower()}_ensembl_ncbi-{ensembl_version}.txt'
 
   # initialize a dictionary of Proteins, with key as their Ensembl gene IDs for easy lookup
   protein_dict = {}
 
   # read ensembl file with swissprot, trembl and refseq
-  with open(ensembl_filepath_others, 'r') as f:
+  with open(ensembl_filepath_others, 'r', encoding='UTF-8') as f:
     f.readline()  # skips the first line
     for line in f:
 
@@ -81,7 +93,7 @@ def read_ensembl_data(species_name: str, ensembl_version: str) -> dict[str, Prot
       protein.add_other_ids(line)
 
   # read ensembl file with ncbi ids
-  with open(ensembl_filepath_ncbi, 'r') as f:
+  with open(ensembl_filepath_ncbi, 'r', encoding='UTF-8') as f:
     f.readline()  # skips the first line
     for line in f:
 
@@ -96,7 +108,3 @@ def read_ensembl_data(species_name: str, ensembl_version: str) -> dict[str, Prot
       protein.add_ncbi_ids(line)
 
   return protein_dict
-
-
-if __name__ == '__main__':
-  print(f'{get_project_root()}/ensembl/')
