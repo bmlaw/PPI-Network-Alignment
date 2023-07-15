@@ -75,12 +75,13 @@ print(SetEncoder().encode(p))
 
 
 for species1 in species_list:
-    for species2 in species_list:
-        species_short1 = species1.name
-        species_short2 = species2.name
+  for species2 in species_list:
+    species_short1 = species1.name
+    species_short2 = species2.name
 
-        if species1.name > species2.name:
-            species_short1, species_short2 = species_short2, species_short1
+    if species1.name > species2.name:
+      species_short1, species_short2 = species_short2, species_short1
 
-        print(
-            f'./sana -fg1 ../PPI-Network-Alignment/networks/SANA/{species1.short_name.lower().replace(" ", "_")}.network-109-4.4.222.el -fg2 ../PPI-Network-Alignment/networks/SANA/{species2.short_name.lower().replace(" ", "_")}.network-109-4.4.222.el -ec 1.0 -o {species_short1}_{species_short2}')
+      output = f'./sana -fg1 ../PPI-Network-Alignment/networks/SANA/{species1.short_name.lower().replace(" ", "_")}.network-109-4.4.222.el -fg2 ../PPI-Network-Alignment/networks/SANA/{species2.short_name.lower().replace(" ", "_")}.network-109-4.4.222.el -ec 1.0 -o {species_short1}_{species_short2}'
+
+      print(output)

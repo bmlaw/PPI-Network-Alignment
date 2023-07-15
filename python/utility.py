@@ -40,15 +40,38 @@ def get_species(species_name: str) -> Species:
 
 
 def get_ensembl_data(species_name: str, ensembl_version: str=None) -> dict[str, Protein.Protein]:
+  """ Gets the Ensembl data for a species from the downloaded Ensembl BioMart files, loaded into a dictionary for easy
+      lookup. Accessor for a global variable / singleton pattern.
+
+      Warning: the version number is ONLY for reading the data off disk. If another version of Ensembl data for this 
+      species has already been loaded off the disk, Ensembl data for that version will be returned instead of the 
+      specified version.
+
+  :param species_name: the name of the species, can be in colloquial (human), short (H sapiens), or long form (Homo 
+                       sapiens)
+  :param ensembl_version: the specific version of Ensembl to load up, defaults to the latest version that can be found
+                          in the directory if not provided
+  :return: dictionary mapping Ensembl gene IDs to Protein objects
+  """
+  
+  # Transform the provides species name into the global Species object for translational purposes
   species = get_species(species_name)
 
+  # If species data is already loaded into the global, return it. Note this is UNVERSIONED.
+  if species.name in g_ensembl_data:
+    return g_ensembl_data[species.name]
+
+  # If no Ensembl version is specified, search the directory for the latest version and use that.
   if ensembl_version is None:
+    ensembl_species_name = species.short_name.lower().replace(' ', '_')
     filenames = os.listdir(f'{get_project_root()}/ensembl/')
+    filenames = [f for f in filenames if ensembl_species_name in f]
     file_versions = [int(filename[filename.rfind('-') + 1:filename.rfind('.')]) for filename in filenames if
-                     os.path.isfile(os.path.join('../../ensembl', filename))]
+                     os.path.isfile(os.path.join(f'{get_project_root()}/ensembl', filename))]
 
     ensembl_version = max(file_versions)
 
+  # Read data from disk, store it as global, then return it.
   if species.name not in g_ensembl_data:
     g_ensembl_data[species.name] = read_ensembl_data(species_name, ensembl_version)
 
@@ -56,16 +79,17 @@ def get_ensembl_data(species_name: str, ensembl_version: str=None) -> dict[str, 
 
 
 def read_ensembl_data(species_name: str, ensembl_version: str) -> dict[str, Protein.Protein]:
-  """
-  Utility function to read in Ensembl data for a specific species. Will generate a list (dictionary) of Protein objects
-  and their IDs from downloaded Ensembl files.
+  """ Utility function to read in Ensembl data for a specific species. Will generate a list (dictionary) of Protein 
+  objects and their IDs from downloaded Ensembl files, saves it into a global variable, and returns the data for
+  immediate access.
 
   Accesses Ensembl files in the ensembl subdirectory.
 
-  :param species_name: the name of the species to load Ensembl data from. Can be colloquial (human) or scientific (homo 
-                       sapiens).
-  :param ensembl_version:
-  :return:
+  :param species_name: the name of the species, can be in colloquial (human), short (H sapiens), or long form (Homo 
+                       sapiens)
+  :param ensembl_version: the specific version of Ensembl to load up, defaults to the latest version that can be found
+                          in the directory if not provided
+  :return: dictionary mapping Ensembl gene IDs to Protein objects
   """
 
   # Fetch species based on provided species name
