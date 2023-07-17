@@ -13,65 +13,84 @@ import python.utility as utility
 
 class Network:
 
-  def __init__(self, species_name=None, ensembl_version=None, biogrid_version=None):
+  def __init__(self, species_name, ensembl_version=None, biogrid_version=None):
     self.graph = networkx.Graph()
-
-    if species_name is None:
-      return
 
     species = utility.get_species(species_name)
 
     # If no Ensembl version is specified, search the directory for the latest version and use that.
     if ensembl_version is None:
-      ensembl_species_name = species.short_name.lower().replace(' ', '_')
-      filenames = os.listdir(f'{utility.get_project_root()}/ensembl/')
-      filenames = [f for f in filenames if ensembl_species_name in f]
-      file_versions = [int(filename[filename.rfind('-') + 1:filename.rfind('.')]) for filename in filenames if
-                      os.path.isfile(os.path.join(f'{utility.get_project_root()}/ensembl', filename))]
-
-      ensembl_version = max(file_versions)
+      ensembl_version = utility.get_latest_ensembl_version(species)
 
     # initialize a dictionary of Proteins, with key as their Ensembl gene IDs for easy lookup
     protein_dict = utility.get_ensembl_data(species.name, ensembl_version)
 
     if biogrid_version is None:
-      filenames = os.listdir(f'{utility.get_project_root()}/biogrid/')
-      file_versions = [filename[filename.rfind('-') + 1:filename.rfind('.mitab')] for filename in filenames if
-                       os.path.isfile(os.path.join(f'{utility.get_project_root()}/biogrid', filename))]
-      file_versions = [tuple([int(x) for x in version.split('.')]) for version in file_versions]
+      biogrid_version = utility.get_latest_biogrid_version()
 
-      biogrid_version = '.'.join(map(str, max(file_versions, key=lambda x: (x[0], x[1], x[2]))))
-    network_filepath = f'{utility.get_project_root()}/networks/{species.short_name.replace(" ", "_").lower()}-{ensembl_version}-{biogrid_version}.txt'
+    # Open the processed network file
+    network_filepath = f'{utility.get_project_root()}/networks/{species.short_name.replace(" ", "_").lower()}.network-{ensembl_version}-{biogrid_version}.txt'
 
-    # get the physical and experimental MI codes
-    good_codes = (interaction_codes.get_experimental_codes(), interaction_codes.get_physical_codes)
+    # If the network file doesn't exist, try to generate it
+    if not os.path.isfile(network_filepath):
+      read_biogrid_data(species.name, ensembl_version, biogrid_version)
 
-    s = f'{utility.get_project_root()}/networks/{species.short_name.replace(" ", "_").lower()}.network-{ensembl_version}-{biogrid_version}.txt'
-    print(s)
-    f = open(s)
-    print(f.readline())
-    f.close()
-
+    # Open the network file and read it into this Network object
     with open(network_filepath, encoding='UTF-8') as f:
-      # build a list of interactions
-      interaction_list = []
-
-      # skip first line
-      f.readline()
-
       for line in f:
-        line = line.rstrip()
-        line = line.split("\n")
+        line = line.strip()
 
-        interaction = get_gene_ids(line, good_codes)
+        # Skip any blank lines or comment lines
+        if len(line) == 0 or line[0] == '!':
+          continue
+          
+        line = line.split("\t")
 
-        interaction_list.append(interaction)
+        self.graph.add_edge(protein_dict[line[0]], protein_dict[line[1]])
 
-    interaction_list = id_to_protein(protein_dict, interaction_list, species, ensembl_version, biogrid_version)
 
-    self.graph.add_edge(interaction_list[0], interaction_list[1])  
 
-    print(self.graph.nodes)
+def read_biogrid_data(species_name: str, ensembl_version: str = None, biogrid_version: str = None) -> list[(Protein.Protein, Protein.Protein)]:
+  species = utility.get_species(species_name)
+
+  # If no Ensembl version is specified, search the directory for the latest version and use that.
+  if ensembl_version is None:
+    ensembl_species_name = species.short_name.lower().replace(' ', '_')
+    filenames = os.listdir(f'{utility.get_project_root()}/ensembl/')
+    filenames = [f for f in filenames if ensembl_species_name in f]
+    file_versions = [int(filename[filename.rfind('-') + 1:filename.rfind('.')]) for filename in filenames if
+                      os.path.isfile(os.path.join(f'{utility.get_project_root()}/ensembl', filename))]
+
+    ensembl_version = max(file_versions)
+
+  # initialize a dictionary of Proteins, with key as their Ensembl gene IDs for easy lookup
+  protein_dict = utility.get_ensembl_data(species.name, ensembl_version)
+
+  if biogrid_version is None:
+    filenames = os.listdir(f'{utility.get_project_root()}/biogrid/')
+    file_versions = [filename[filename.rfind('-') + 1:filename.rfind('.mitab')] for filename in filenames if
+                     os.path.isfile(os.path.join(f'{utility.get_project_root()}/biogrid', filename))]
+    file_versions = [tuple([int(x) for x in version.split('.')]) for version in file_versions]
+
+    biogrid_version = '.'.join(map(str, max(file_versions, key=lambda x: (x[0], x[1], x[2]))))
+
+  biogrid_filepath = f'{utility.get_project_root()}/biogrid/BIOGRID-ORGANISM-{species.long_name.replace(" ", "_")}-{biogrid_version}.mitab.txt'
+    
+  # get the physical and experimental MI codes
+  good_codes = (interaction_codes.get_physical_codes(), interaction_codes.get_experimental_codes())
+
+  interaction_list = []
+
+  with open(biogrid_filepath, encoding='UTF-8') as f:
+    f.readline()
+
+    for line in f:
+      interaction = get_gene_ids(line, good_codes)
+      interaction_list.append(interaction)
+
+  interaction_list = id_to_protein(protein_dict, interaction_list, species, ensembl_version, biogrid_version)
+
+  return interaction_list
 
 
 def get_gene_ids(line, good_codes) -> tuple[tuple[str, dict[str: list[str]]], tuple[str, dict[str: list[str]]]]:
@@ -88,7 +107,7 @@ def get_gene_ids(line, good_codes) -> tuple[tuple[str, dict[str: list[str]]], tu
   """
 
   # create a list contains strs after line splitted by tabs
-  by_tab = line[0].split('\t')
+  by_tab = line.split('\t')
 
   # set of physical codes
   phys_codes = good_codes[0]
@@ -379,4 +398,4 @@ def id_to_protein(protein_dict: dict[str, Protein.Protein],
   return remapped_interactions
 
 if __name__ == '__main__':
-  n = Network('zebrafish')
+  n = read_biogrid_data('zebrafish')

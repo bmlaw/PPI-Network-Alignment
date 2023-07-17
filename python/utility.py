@@ -38,6 +38,34 @@ def get_species(species_name: str) -> Species:
 
   return species
 
+def get_latest_ensembl_version(species: Species) -> str:
+  """ Search the ensembl subdirectory for version number of the latest Ensembl data available for this species.
+
+  :param species: the species for which you want to find the latest Ensembl data
+  :return: the latest Ensembl version # in the ensembl subdirectory
+  """
+  ensembl_species_name = species.short_name.lower().replace(' ', '_')
+  filenames = os.listdir(f'{get_project_root()}/ensembl/')
+  filenames = [f for f in filenames if ensembl_species_name in f]
+  file_versions = [int(filename[filename.rfind('-') + 1:filename.rfind('.')]) for filename in filenames if
+                    os.path.isfile(os.path.join(f'{get_project_root()}/ensembl', filename))]
+
+  return str(file_versions)
+
+def get_latest_biogrid_version() -> str:
+  """ Search the biogrid subdirectory for version number of the latest BioGRID data available for this species.
+
+  :return: the latest BioGRID version # in the biogrid subdirectory
+  """
+  if biogrid_version is None:
+    filenames = os.listdir(f'{get_project_root()}/biogrid/')
+    file_versions = [filename[filename.rfind('-') + 1:filename.rfind('.mitab')] for filename in filenames if
+                      os.path.isfile(os.path.join(f'{get_project_root()}/biogrid', filename))]
+    file_versions = [tuple([int(x) for x in version.split('.')]) for version in file_versions]
+
+    biogrid_version = '.'.join(map(str, max(file_versions, key=lambda x: (x[0], x[1], x[2]))))
+
+    return biogrid_version
 
 def get_ensembl_data(species_name: str, ensembl_version: str=None) -> dict[str, Protein.Protein]:
   """ Gets the Ensembl data for a species from the downloaded Ensembl BioMart files, loaded into a dictionary for easy

@@ -1,4 +1,4 @@
-! Generated using Ensembl 109 and BioGRID 4.4.222
+! Generated using Ensembl 109 and BioGRID 4.4.222 on 2023-07-14 23:07:09.211124
 ! Total interactions processed: 576
 ! 410 total interactions mapped successfully into 384 unique interactions
 ! non-physical interactions filtered out: 88
@@ -8,10 +8,8 @@
 ! interactions mapped to invalid "proteins": 12
 ! % interactions mapped to invalid "proteins": 2.083%
 ! total interactions with unmappable IDs (including duplicates): 11
-! % IDs unmappable (including duplicates): 1.324%
 ! total unmappable proteins (excluding duplicates): 10
 ! total interactions with noncoding genes (including duplicates): 1
-! % IDs mapped to noncoding genes (including duplicates): 0.122%
 ! total mapped noncoding proteins (excluding duplicates): 1
 !
 ! Non-coding genes:
@@ -19,15 +17,15 @@
 !
 ! Non-existent proteins:
 ! 568520 occurs 2 times 	0.347%
-! 30076 occurs 1 times 	0.174%
-! 445133 occurs 1 times 	0.174%
-! 334608 occurs 1 times 	0.174%
-! 100073344 occurs 1 times 	0.174%
-! 100535119 occurs 1 times 	0.174%
-! 393600 occurs 1 times 	0.174%
-! 100126016 occurs 1 times 	0.174%
-! 101882408 occurs 1 times 	0.174%
 ! 751723 occurs 1 times 	0.174%
+! 445133 occurs 1 times 	0.174%
+! 393600 occurs 1 times 	0.174%
+! 334608 occurs 1 times 	0.174%
+! 30076 occurs 1 times 	0.174%
+! 101882408 occurs 1 times 	0.174%
+! 100535119 occurs 1 times 	0.174%
+! 100126016 occurs 1 times 	0.174%
+! 100073344 occurs 1 times 	0.174%
 !
 ENSDARG00000010381	ENSDARG00000006010
 ENSDARG00000013076	ENSDARG00000010381
